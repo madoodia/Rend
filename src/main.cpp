@@ -26,7 +26,7 @@ int main(int, char**)
 			int ig = int(255.999 * g);
 			int ib = int(255.999 * b);
 
-			std::cout << ir << " " << ig << " " << ib << "\n";
+			std::cout << ir << " " << ig << " " << ib <<  "\n";
 		}
 	}
 

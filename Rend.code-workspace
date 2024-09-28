@@ -1,147 +1,123 @@
 {
-	"folders": [
-	  {
-		"path": "."
-	  }
-	],
-	"settings": {
-	  "files.associations": {
-		"c": "cpp",
-		"atomic": "cpp",
-		"bit": "cpp",
-		"cctype": "cpp",
-		"charconv": "cpp",
-		"clocale": "cpp",
-		"cmath": "cpp",
-		"compare": "cpp",
-		"concepts": "cpp",
-		"cstddef": "cpp",
-		"cstdint": "cpp",
-		"cstdio": "cpp",
-		"cstdlib": "cpp",
-		"cstring": "cpp",
-		"ctime": "cpp",
-		"cwchar": "cpp",
-		"exception": "cpp",
-		"format": "cpp",
-		"initializer_list": "cpp",
-		"ios": "cpp",
-		"iosfwd": "cpp",
-		"iostream": "cpp",
-		"istream": "cpp",
-		"iterator": "cpp",
-		"limits": "cpp",
-		"locale": "cpp",
-		"memory": "cpp",
-		"new": "cpp",
-		"ostream": "cpp",
-		"stdexcept": "cpp",
-		"streambuf": "cpp",
-		"system_error": "cpp",
-		"tuple": "cpp",
-		"type_traits": "cpp",
-		"typeinfo": "cpp",
-		"utility": "cpp",
-		"xfacet": "cpp",
-		"xiosbase": "cpp",
-		"xlocale": "cpp",
-		"xlocbuf": "cpp",
-		"xlocinfo": "cpp",
-		"xlocmes": "cpp",
-		"xlocmon": "cpp",
-		"xlocnum": "cpp",
-		"xloctime": "cpp",
-		"xmemory": "cpp",
-		"xstring": "cpp",
-		"xtr1common": "cpp",
-		"xutility": "cpp"
-	},
-	  "workbench.editorAssociations": {
-	  },
-	},
-	"extensions": {
-	  "recommendations": ["ms-vscode.cpptools"]
-	},
-	"tasks": {
-	  "version": "2.0.0",
-	  "tasks": [
-		{
-		  "label": "setup",
-		  "type": "shell",
-		  "command": "powershell",
-		  "args": ["-Command", "& setup ${workspaceFolder}"],
-		  "group": {
-			"kind": "build",
-			"isDefault": true
-		  },
-		  "dependsOn": [],
-		  "presentation": {
-			  "echo": false,
-			  "reveal": "always",
-			  "focus": true,
-			  "panel": "shared",
-			  "showReuseMessage": false,
-			  "clear": false
-		  }
-		},
-		{
-		  "type": "shell",
-		  "label": "build",
-		  "command": "W:\\cmds\\build.bat",
-		  "group": {
-			"kind": "build",
-			"isDefault": true
-		  },
-		  "dependsOn": ["setup"],
-		  "args": ["${workspaceFolder}", "${workspaceFolderBasename}"],
-		  "presentation": {
-			  "echo": true,
-			  "reveal": "always",
-			  "focus": true,
-			  "panel": "shared",
-			  "showReuseMessage": true,
-			  "clear": false
-		  }
-		},
-		{
-		  "type": "shell",
-		  "label": "debug",
-		  "command": "W:\\cmds\\debug.bat",
-		  "group": {
-			"kind": "build",
-			"isDefault": true
-		  },
-		  "dependsOn": ["setup"],
-		  "args": ["${workspaceFolderBasename}"],
-		  "presentation": {
-			  "echo": false,
-			  "reveal": "never",
-			  "focus": true,
-			  "panel": "shared",
-			  "showReuseMessage": false,
-			  "clear": false
-		  }
-		},
-		{
-		  "type": "shell",
-		  "label": "run",
-		  "command": "W:\\cmds\\run.bat",
-		  "group": {
-			"kind": "build",
-			"isDefault": true
-		  },
-		  "dependsOn": ["setup"],
-		  "args": ["${workspaceFolderBasename}"],
-		  "presentation": {
-			  "echo": true,
-			  "reveal": "always",
-			  "focus": true,
-			  "panel": "shared",
-			  "showReuseMessage": true,
-			  "clear": false,
-		  }
-		}
-	  ]
-	}
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.associations": {
+      "c": "cpp",
+      "atomic": "cpp",
+      "bit": "cpp",
+      "cctype": "cpp",
+      "charconv": "cpp",
+      "clocale": "cpp",
+      "cmath": "cpp",
+      "compare": "cpp",
+      "concepts": "cpp",
+      "cstddef": "cpp",
+      "cstdint": "cpp",
+      "cstdio": "cpp",
+      "cstdlib": "cpp",
+      "cstring": "cpp",
+      "ctime": "cpp",
+      "cwchar": "cpp",
+      "exception": "cpp",
+      "format": "cpp",
+      "initializer_list": "cpp",
+      "ios": "cpp",
+      "iosfwd": "cpp",
+      "iostream": "cpp",
+      "istream": "cpp",
+      "iterator": "cpp",
+      "limits": "cpp",
+      "locale": "cpp",
+      "memory": "cpp",
+      "new": "cpp",
+      "ostream": "cpp",
+      "stdexcept": "cpp",
+      "streambuf": "cpp",
+      "system_error": "cpp",
+      "tuple": "cpp",
+      "type_traits": "cpp",
+      "typeinfo": "cpp",
+      "utility": "cpp",
+      "xfacet": "cpp",
+      "xiosbase": "cpp",
+      "xlocale": "cpp",
+      "xlocbuf": "cpp",
+      "xlocinfo": "cpp",
+      "xlocmes": "cpp",
+      "xlocmon": "cpp",
+      "xlocnum": "cpp",
+      "xloctime": "cpp",
+      "xmemory": "cpp",
+      "xstring": "cpp",
+      "xtr1common": "cpp",
+      "xutility": "cpp"
+    },
+    "workbench.editorAssociations": {}
+  },
+  "extensions": {
+    "recommendations": ["ms-vscode.cpptools"]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "type": "shell",
+        "label": "build",
+        "command": "${workspaceFolder}\\cmds\\build.bat",
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "dependsOn": [],
+        "args": ["${workspaceFolder}", "${workspaceFolderBasename}"],
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "shared",
+          "showReuseMessage": true,
+          "clear": false
+        }
+      },
+      {
+        "type": "shell",
+        "label": "debug",
+        "command": "powershell",
+        "args": [
+          "-Command",
+          "Start-Process devenv.exe ${workspaceFolder}\\bin\\Rend.exe"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "type": "shell",
+        "label": "run",
+        "command": "powershell",
+        "args": [
+          "-Command",
+          "Start-Process '${workspaceFolder}\\bin\\Rend.exe' -NoNewWindow -RedirectStandardOutput '${workspaceFolder}\\output\\render.ppm'"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "dependsOn": [],
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "shared",
+          "showReuseMessage": true,
+          "clear": false
+        }
+      }
+    ]
   }
-  
+}

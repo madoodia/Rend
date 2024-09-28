@@ -12,7 +12,7 @@ SET PROJECT_NAME=%2
 @REM CALL "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64 >NUL 2>&1
 CALL "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
 
-pushd "W:"
+pushd "%ROOT%"
 if exist "build" (
     rmdir /s /q "build"
 )
@@ -21,17 +21,19 @@ if not exist "bin" (
     MKDIR "bin"
 )
 
+copy %ROOT%\dlls\*.dll %ROOT%\bin > NUL 2>&1
+
 MKDIR "build"
 popd
-pushd "W:\build"
+pushd "%ROOT%\build"
 
 @REM Gathering sources, includes, and libs
-SET SOURCES=W:\src\*.cpp
-SET INCLUDES=W:\includes
-SET LIBS_DIR=W:\libs
+SET SOURCES=%ROOT%\src\*.cpp
+SET INCLUDES=%ROOT%\includes
+SET LIBS_DIR=%ROOT%\libs
 @REM SET CXXFLAGS=/EHsc /std:c++latest /D_CRT_SECURE_NO_WARNINGS
 
-SET EXECUTABLE=W:\bin\%PROJECT_NAME%.exe
+SET EXECUTABLE=%ROOT%\bin\%PROJECT_NAME%.exe
 
 @REM WIN32
 @REM _WINDOWS
