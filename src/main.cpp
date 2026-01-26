@@ -5,6 +5,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// timer rdtsc
+#include <chrono>
+
+std::chrono::steady_clock::time_point GetTimeStamp()
+{
+	return std::chrono::steady_clock::now();
+}
+
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -16,8 +24,51 @@ typedef int s32;
 typedef float f32;
 typedef double f64;
 
+const static u32 SIZE = 1 << 20; // 67 million
+
+struct Vertex // AOS
+{
+	f32 Position;
+	f32 Color;
+};
+
+struct Point2 // SOA
+{
+	f32 x[SIZE];
+	f32 y[SIZE];
+};
+
 int main(int, char**)
 {
-	printf("Rend Engine - C++ Language Standard Version Test\n");
-	return 0;
+	u32 Width = 5;
+	u32 Height = 5;
+
+	u32* ptr = nullptr;
+
+	u32 OutputSize = sizeof(u32) * Width * Height;
+	u32* OutputBuffer = (u32*)malloc(OutputSize);
+
+	u32* FinalOutput = OutputBuffer;
+	ptr = OutputBuffer;
+
+	for (u32 i = 0;
+		 i < OutputSize;
+		 ++i)
+	{
+		*ptr++ = 0xAAAAAAAA;
+	}
+
+	for (u32 Y = 0;
+		 Y < Height;
+		 ++Y)
+	{
+		for (u32 X = 0;
+			 X < Width;
+			 ++X)
+		{
+			*FinalOutput++ = (Y < 32) ? 0x0000FFFF : 0xFF0000FF;
+		}
+	}
+
+	return (0);
 }

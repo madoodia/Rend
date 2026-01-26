@@ -37,7 +37,7 @@ pushd "%ROOT%\build"
 @REM Optimized: /Od
 @REM non Optimized: /Ox
 
-SET CXXFLAGS=-O2 -MTd -nologo -fp:fast -fp:except- -Gm- -GR- -EHa- -Zo -Oi -WX -W4 -FC -Z7 -std:c++17
+SET CXXFLAGS=-Od -MTd -nologo -fp:fast -fp:except- -Gm- -GR- -EHa- -Zo -Oi -WX -W4 -FC -Z7 -std:c++17
 @REM SET CXXFLAGS=%CXXFLAGS% 
 SET LINKERFLAGS=-opt:ref %LIBS%
 

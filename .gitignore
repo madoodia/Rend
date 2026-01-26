@@ -1,5 +1,7 @@
 # (C) 2025 madoodia.com . All Rights Reserved!
 
-*bin/*
-*build/*
-*dist/*
+bin/
+build/
+dist/
+
+!*.sln
