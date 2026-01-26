@@ -1,5 +1,19 @@
 #include <stdio.h>
 
+const static u32 SIZE = 1 << 20; // 67 million
+
+struct Vertex // AOS
+{
+	f32 Position;
+	f32 Color;
+};
+
+struct Point2 // SOA
+{
+	f32 x[SIZE];
+	f32 y[SIZE];
+};
+
 int main()
 {
 	// Allocation Memory

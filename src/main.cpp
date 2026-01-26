@@ -24,20 +24,6 @@ typedef int s32;
 typedef float f32;
 typedef double f64;
 
-const static u32 SIZE = 1 << 20; // 67 million
-
-struct Vertex // AOS
-{
-	f32 Position;
-	f32 Color;
-};
-
-struct Point2 // SOA
-{
-	f32 x[SIZE];
-	f32 y[SIZE];
-};
-
 int main(int, char**)
 {
 	u32 Width = 5;
@@ -49,14 +35,6 @@ int main(int, char**)
 	u32* OutputBuffer = (u32*)malloc(OutputSize);
 
 	u32* FinalOutput = OutputBuffer;
-	ptr = OutputBuffer;
-
-	for (u32 i = 0;
-		 i < OutputSize;
-		 ++i)
-	{
-		*ptr++ = 0xAAAAAAAA;
-	}
 
 	for (u32 Y = 0;
 		 Y < Height;
