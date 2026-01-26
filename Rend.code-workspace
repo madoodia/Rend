@@ -1,75 +1,45 @@
 {
-  "folders": [
-    {
-      "path": "."
-    }
-  ],
-  "settings": {
-    "files.associations": {
-      "c": "cpp",
+    "folders": [
+        {
+            "path": ".",
+        },
+    ],
+    "settings": {},
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "build",
+                "command": "${workspaceFolder}/build.bat",
+                "args": ["0"],
+                "problemMatcher": [],
+                "presentation": {},
+                "group": {
+                    "kind": "build",
+                    "isDefault": true,
+                },
+            },
+            {
+                "label": "debug",
+                "command": "${workspaceFolder}/build.bat",
+                "args": ["1"],
+                "problemMatcher": [],
+                "presentation": {},
+                "group": {
+                    "kind": "build",
+                    "isDefault": true,
+                },
+            },
+            {
+                "label": "run",
+                "command": "${workspaceFolder}/bin/Rend.exe",
+                "problemMatcher": [],
+                "presentation": {},
+                "group": {
+                    "kind": "build",
+                    "isDefault": true,
+                },
+            },
+        ],
     },
-    "workbench.editorAssociations": {}
-  },
-  "extensions": {
-    "recommendations": ["ms-vscode.cpptools"]
-  },
-  "tasks": {
-    "version": "2.0.0",
-    "tasks": [
-      {
-        "type": "shell",
-        "label": "build",
-        "command": "${workspaceFolder}\\cmds\\build.bat",
-        "group": {
-          "kind": "build",
-          "isDefault": true
-        },
-        "dependsOn": [],
-        "args": ["${workspaceFolder}", "${workspaceFolderBasename}"],
-        "presentation": {
-          "echo": true,
-          "reveal": "always",
-          "focus": true,
-          "panel": "shared",
-          "showReuseMessage": true,
-          "clear": false
-        }
-      },
-      {
-        "type": "shell",
-        "label": "debug",
-        "command": "powershell",
-        "args": [
-          "-Command",
-          "Start-Process devenv.exe ${workspaceFolder}\\bin\\Rend.exe"
-        ],
-        "group": {
-          "kind": "build",
-          "isDefault": true
-        }
-      },
-      {
-        "type": "shell",
-        "label": "run",
-        "command": "powershell",
-        "args": [
-          "-Command",
-          "Start-Process '${workspaceFolder}\\bin\\Rend.exe' -NoNewWindow -RedirectStandardOutput '${workspaceFolder}\\output\\render.ppm'"
-        ],
-        "group": {
-          "kind": "build",
-          "isDefault": true
-        },
-        "dependsOn": [],
-        "presentation": {
-          "echo": true,
-          "reveal": "always",
-          "focus": true,
-          "panel": "shared",
-          "showReuseMessage": true,
-          "clear": false
-        }
-      }
-    ]
-  }
 }
