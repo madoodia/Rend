@@ -37,13 +37,20 @@ pushd "%ROOT%\build"
 @REM Optimized: /Od
 @REM non Optimized: /Ox
 
-SET CXXFLAGS=-Od -MTd -nologo -fp:fast -fp:except- -Gm- -GR- -EHa- -Zo -Oi -WX -W4 -FC -Z7 -std:c++17
+SET CXXFLAGS=-O2 -MTd -nologo -fp:fast -fp:except- -Gm- -GR- -EHa- -Zo -Oi -WX -W4 -FC -Z7 -std:c++17 -D_CRT_SECURE_NO_WARNINGS
 @REM SET CXXFLAGS=%CXXFLAGS% 
-SET LINKERFLAGS=-opt:ref %LIBS%
+SET LINKERFLAGS=-opt:ref %LIBS% 
 
 SET LIBS= user32.lib gdi32.lib kernel32.lib winmm.lib opengl32.lib
 
+@REM building the timer
+cl %CXXFLAGS% "%ROOT%\tools\timer.cpp" /link %LINKERFLAGS% /OUT:"%ROOT%\tools\timer.exe"
+
+"%ROOT%\tools\timer.exe" -start
+
 cl %CXXFLAGS% %SOURCES% /link %LINKERFLAGS% /OUT:"%ROOT%\bin\Rend.exe"
+
+CALL "%ROOT%\tools\timer.exe" end
 
 @REM copy %ROOT%\build\*.dll %ROOT%\bin > NUL 2>&1
 @REM copy %ROOT%\build\*.exe %ROOT%\bin > NUL 2>&1

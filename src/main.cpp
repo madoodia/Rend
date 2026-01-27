@@ -29,8 +29,6 @@ int main(int, char**)
 	u32 Width = 5;
 	u32 Height = 5;
 
-	u32* ptr = nullptr;
-
 	u32 OutputSize = sizeof(u32) * Width * Height;
 	u32* OutputBuffer = (u32*)malloc(OutputSize);
 
