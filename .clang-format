@@ -11,3 +11,4 @@ AccessModifierOffset: -4
 SortIncludes: false
 EmptyLineBeforeAccessModifier: Always
 IndentPPDirectives: AfterHash
+# AlwaysBreakAfterReturnType: false

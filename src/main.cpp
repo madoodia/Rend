@@ -8,6 +8,8 @@
 #include <Windows.h>
 #include <string>
 
+#define internal static
+
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -23,26 +25,41 @@ typedef double f64;
 #pragma pack(push, 1)
 struct BitmapHeader
 {
-	u16 FileType;
-	u32 FileSize;
-	u16 Reserved1;
-	u16 Reserved2;
-	u32 BitmapOffset;
-	u32 Size;
-	s32 Width;
-	s32 Height;
-	u16 Planes;
-	u16 BitsPerPixel;
-	u32 Compression;
-	u32 SizeOfBitmap;
-	s32 HorzResolution;
-	s32 VertResolution;
-	u32 ColorUsed;
-	u32 ColorImportant;
+	u16 fileType;
+	u32 fileSize;
+	u16 reserved1;
+	u16 reserved2;
+	u32 bitmapOffset;
+	u32 size;
+	s32 width;
+	s32 height;
+	u16 planes;
+	u16 bitsPerPixel;
+	u32 compression;
+	u32 sizeOfBitmap;
+	s32 horzResolution;
+	s32 vertResolution;
+	u32 colorUsed;
+	u32 colorImportant;
 };
 #pragma pack(pop)
 
-uint64_t GetCPUFrequencyHz();
+internal uint64_t
+GetCPUFrequencyHz()
+{
+	DWORD freq_mhz = 0;
+	DWORD size = sizeof(freq_mhz);
+	LONG result = RegGetValueA(HKEY_LOCAL_MACHINE,
+							   "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+							   "~MHz", RRF_RT_REG_DWORD, NULL, &freq_mhz, &size);
+
+	if (result == ERROR_SUCCESS)
+	{
+		return (u64)freq_mhz * 1000000; // MHz to Hz
+	}
+	return 0;
+}
+
 class TimeStamp
 {
 public:
@@ -72,79 +89,90 @@ private:
 	u64 m_cpu_hz;
 };
 
-uint64_t GetCPUFrequencyHz()
+struct ImageBuffer
 {
-	DWORD freq_mhz = 0;
-	DWORD size = sizeof(freq_mhz);
-	LONG result = RegGetValueA(HKEY_LOCAL_MACHINE,
-							   "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
-							   "~MHz", RRF_RT_REG_DWORD, NULL, &freq_mhz, &size);
+	u32 width;
+	u32 height;
+	u32* pixels;
+};
 
-	if (result == ERROR_SUCCESS)
+internal u32
+GetTotalPixelSize(ImageBuffer image)
+{
+	return image.width * image.height * sizeof(u32);
+}
+
+internal ImageBuffer
+AllocateImage(u32 width, u32 height)
+{
+	ImageBuffer image = {};
+	image.width = width;
+	image.height = height;
+
+	u32 outputSize = GetTotalPixelSize(image);
+	image.pixels = (u32*)malloc(outputSize);
+
+	return image;
+}
+
+internal void
+WriteImage(ImageBuffer image, const char* filename)
+{
+	u32 outputSize = GetTotalPixelSize(image);
+	BitmapHeader bmpHeader = {};
+	bmpHeader.fileType = 0x4D42; // 'BMP'
+	bmpHeader.fileSize = sizeof(bmpHeader) + outputSize;
+	bmpHeader.reserved1 = 0;
+	bmpHeader.reserved2 = 0;
+	bmpHeader.bitmapOffset = sizeof(bmpHeader);
+	bmpHeader.size = sizeof(bmpHeader) - 14;
+	bmpHeader.width = image.width;
+	bmpHeader.height = image.height;
+	bmpHeader.planes = 1;
+	bmpHeader.bitsPerPixel = 32;
+	bmpHeader.compression = 0;
+	bmpHeader.sizeOfBitmap = outputSize;
+	bmpHeader.horzResolution = 0;
+	bmpHeader.vertResolution = 0;
+	bmpHeader.colorUsed = 0;
+	bmpHeader.colorImportant = 0;
+
+	FILE* outputFile = fopen(filename, "wb");
+
+	if (outputFile)
 	{
-		return (u64)freq_mhz * 1000000; // MHz to Hz
+		fwrite(&bmpHeader, sizeof(bmpHeader), 1, outputFile);
+		fwrite(image.pixels, outputSize, 1, outputFile);
+		fclose(outputFile);
 	}
-	return 0;
+	else
+	{
+		fprintf(stderr, "[Error]: Could not open and write data to output file '%s'.\n", filename);
+	}
 }
 
 int main(int, char**)
 {
-	u32 Width = 1280;
-	u32 Height = 780;
+	ImageBuffer image = AllocateImage(1280, 720);
 
-	u32 OutputSize = sizeof(u32) * Width * Height;
-	u32* OutputBuffer = (u32*)malloc(OutputSize);
-
-	u32* FinalOutput = OutputBuffer;
+	u32* finalOutput = image.pixels;
 
 	{
 		TimeStamp timer;
 		for (u32 Y = 0;
-			 Y < Height;
+			 Y < image.height;
 			 ++Y)
 		{
 			for (u32 X = 0;
-				 X < Width;
+				 X < image.width;
 				 ++X)
 			{
-				*FinalOutput++ = (Y < 32) ? 0xFFFF0000 : 0xFF0000FF;
+				*finalOutput++ = (Y < image.height/3) ? 0xFFAA0000 : ((Y < 2*image.height/3) ? 0xFFFFFFFF : 0xFF00AA00);
 			}
 		}
 
-		BitmapHeader BMPHeader = {};
-		BMPHeader.FileType = 0x4D42; // 'BMP'
-		BMPHeader.FileSize = sizeof(BMPHeader) + OutputSize;
-		BMPHeader.Reserved1 = 0;
-		BMPHeader.Reserved2 = 0;
-		BMPHeader.BitmapOffset = sizeof(BMPHeader);
-		BMPHeader.Size = sizeof(BMPHeader) - 14;
-		BMPHeader.Width = Width;
-		BMPHeader.Height = Height;
-		BMPHeader.Planes = 1;
-		BMPHeader.BitsPerPixel = 32;
-		BMPHeader.Compression = 0;
-		BMPHeader.SizeOfBitmap = OutputSize;
-		BMPHeader.HorzResolution = 0;
-		BMPHeader.VertResolution = 0;
-		BMPHeader.ColorUsed = 0;
-		BMPHeader.ColorImportant = 0;
-
-		char* OutputFilename = "images/output.bmp";
-		FILE* OutputFile = fopen(OutputFilename, "wb");
-
-		if (OutputFile)
-		{
-			fwrite(&BMPHeader, sizeof(BMPHeader), 1, OutputFile);
-			fwrite(OutputBuffer, OutputSize, 1, OutputFile);
-			fclose(OutputFile);
-		}
-		else
-		{
-			fprintf(stderr, "[Error]: Could not open and write data to output file '%s'.\n", OutputFilename);
-		}
+		WriteImage(image, "images/output.bmp");
 	}
-
-	free(OutputBuffer);
 
 	return 0;
 }
