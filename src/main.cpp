@@ -7,8 +7,19 @@
 #include <stdlib.h>
 #include <Windows.h>
 
-// timer rdtsc
-#include <chrono>
+
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef unsigned long long u64;
+
+typedef char s8;
+typedef short s16;
+typedef int s32;
+
+typedef float f32;
+typedef double f64;
+
 uint64_t GetCPUFrequencyHz()
 {
 	DWORD freq_mhz = 0;
@@ -24,17 +35,6 @@ uint64_t GetCPUFrequencyHz()
 	return 0;
 }
 
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
-typedef unsigned long long u64;
-
-typedef char s8;
-typedef short s16;
-typedef int s32;
-
-typedef float f32;
-typedef double f64;
 
 int main(int, char**)
 {

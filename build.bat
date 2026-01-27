@@ -27,7 +27,7 @@ SET TIMER_CXXFLAGS=-O2 -nologo -std:c++17 -D_CRT_SECURE_NO_WARNINGS
 @REM  Need to link with advapi32.lib for registry functions
 SET TIMER_LINKERFLAGS=kernel32.lib advapi32.lib
 
-SET CXXFLAGS=-O2 -MTd -nologo -fp:fast -fp:except- -Gm- -GR- -EHa- -Oi -WX -W4 -FC -std:c++17 -D_CRT_SECURE_NO_WARNINGS
+SET CXXFLAGS=-O2 -MTd -nologo -fp:fast -fp:except- -Gm- -GR- -EHa- -Zo -Oi -WX -W4 -FC -Z7 -std:c++17 -D_CRT_SECURE_NO_WARNINGS
 SET LIBS= user32.lib gdi32.lib kernel32.lib winmm.lib opengl32.lib advapi32.lib
 SET LINKERFLAGS=-opt:ref %LIBS%
 
