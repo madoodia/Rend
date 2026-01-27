@@ -1,3 +1,5 @@
+/* (C) 2026 madoodia.com */
+
 #pragma once
 
 #include <stdint.h>
@@ -22,10 +24,11 @@ GetCPUFrequencyHz()
 class TimeStamp
 {
 public:
-	TimeStamp()
+	explicit TimeStamp(const char* msg)
 	{
 		m_start = ReadTimeStampCounter();
 		m_cpu_hz = GetCPUFrequencyHz();
+		m_msg = msg;
 	}
 	~TimeStamp()
 	{
@@ -35,7 +38,7 @@ public:
 		printf("-------------------------------\n");
 		// printf("Program Start: %llu\n", m_start);
 		// printf("Program End: %llu\n", m_end);
-		printf("Program Elapsed Time: %.2f ms\n", elapsed_ms);
+		printf("%s >>> Program Elapsed Time: %.2f ms\n", m_msg, elapsed_ms);
 
 		// printf("CPU Cycles Elapsed: %llu\n", (u64)(m_end - m_start));
 		// printf("CPU Frequency: %llu Hz\n", m_cpu_hz);
@@ -46,6 +49,7 @@ private:
 	u64 m_start;
 	u64 m_end;
 	u64 m_cpu_hz;
+	const char* m_msg;
 };
 
 internal u32

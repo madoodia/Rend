@@ -4,7 +4,7 @@
 
 #### Program Elapsed Time: 5.94 ms
 
-![Final Render](https://github.com/madoodia/Rend/blob/main/images/output.bmp)
+![Final Render](https://github.com/madoodia/Rend/blob/main/output/final_render.bmp)
 
 ---
 

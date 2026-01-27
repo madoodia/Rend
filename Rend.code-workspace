@@ -42,6 +42,17 @@
                     "isDefault": true,
                 },
             },
+            {
+                "label": "build2",
+                "command": "${workspaceFolder}/build.bat",
+                "args": ["0", "${fileBasenameNoExtension}"],
+                "problemMatcher": [],
+                "presentation": {},
+                "group": {
+                    "kind": "build",
+                    "isDefault": true,
+                },
+            },
         ],
     },
 }

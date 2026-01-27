@@ -1,3 +1,5 @@
+/* (C) 2026 madoodia.com */
+
 #pragma once
 
 #include <Windows.h>
@@ -6,6 +8,18 @@
 #include <string>
 
 #define internal static
+#define inline static
+
+#define U16MAX 0xFFFF
+#define U32MAX 0xFFFFFFFF
+#define F32MAX FLT_MAX
+#define F32MAX FLT_MAX
+#define F32MIN -FLT_MAX
+
+#define PI 3.14159265359f
+#define TAU32 6.28318530718f
+#define INV_PI 0.31830988618f
+#define HALF_PI 1.57079632679f
 
 typedef unsigned char u8;
 typedef unsigned short u16;
@@ -15,6 +29,9 @@ typedef unsigned long long u64;
 typedef char s8;
 typedef short s16;
 typedef int s32;
+
+typedef s32 b32;
+typedef s32 b32x;
 
 typedef float f32;
 typedef double f64;
