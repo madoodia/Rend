@@ -1,0 +1,23 @@
+// QueryPerformanceCounter();	 // Get counter value
+// QueryPerformanceFrequency(); // Get counts per second
+// elapsed = (end - start) / frequency;
+// static inline int64_t GetTicks();
+// {
+// 	LARGE_INTEGER ticks;
+// 	if (!QueryPerformanceCounter(&ticks))
+// 	{
+// 		winrt::throw_last_error();
+// 	}
+// 	return ticks.QuadPart;
+// }
+
+// __rdtsc(); // Raw CPU cycles
+// To convert: cycles / cpu_frequency = time
+// Problem: CPU frequency CHANGES during execution
+// (power management, turbo boost, etc)
+
+// Different from Current time
+// Current time = wall-clock time (what clock shows)
+// std::chrono::steady_clock::now();
+// Performance counter = high-resolution interval measurement
+// QueryPerformanceCounter();
