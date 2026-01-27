@@ -4,7 +4,9 @@
             "path": ".",
         },
     ],
-    "settings": {},
+    "settings": {
+        "color-highlight.useARGB": true,
+    },
     "tasks": {
         "version": "2.0.0",
         "tasks": [

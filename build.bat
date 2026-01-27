@@ -20,14 +20,13 @@ IF %DEBUG_MODE%==1 (
     )
     EXIT /B 0
 )
-@echo Building the project...
 
 @REM Build timer FIRST, outside timing (only if it doesn't exist)
 SET TIMER_CXXFLAGS=-O2 -nologo -std:c++17 -D_CRT_SECURE_NO_WARNINGS
 @REM  Need to link with advapi32.lib for registry functions
 SET TIMER_LINKERFLAGS=kernel32.lib advapi32.lib
 
-SET CXXFLAGS=-O2 -MTd -nologo -fp:fast -fp:except- -Gm- -GR- -EHa- -Zo -Oi -WX -W4 -FC -Z7 -std:c++17 -D_CRT_SECURE_NO_WARNINGS
+SET CXXFLAGS=-Od -MTd -nologo -fp:fast -fp:except- -Gm- -GR- -EHa- -Zo -Oi -WX -W4 -FC -Z7 -std:c++17 -D_CRT_SECURE_NO_WARNINGS
 SET LIBS= user32.lib gdi32.lib kernel32.lib winmm.lib opengl32.lib advapi32.lib
 SET LINKERFLAGS=-opt:ref %LIBS%
 
@@ -44,6 +43,7 @@ IF NOT EXIST "%ROOT%\build" (
 
 SET SOURCES="%ROOT%\src\main.cpp"
 
+@echo ------------- Build Started -------------
 call "%ROOT%\bin\timer.exe" s
 if exist "%ROOT%\bin\timer.exe" (
     cl %CXXFLAGS% /Fo%ROOT%\build\\ %SOURCES% /link %LINKERFLAGS% /OUT:"%ROOT%\bin\Rend.exe"
@@ -54,6 +54,9 @@ for /f "tokens=*" %%A in ('"%ROOT%\bin\timer.exe" e') do set ELAPSED=%%A
 @REM copy %ROOT%\build\*.dll %ROOT%\bin > NUL 2>&1
 @REM copy %ROOT%\build\*.exe %ROOT%\bin > NUL 2>&1
 
-CALL "%ROOT%\bin\Rend.exe"
+@echo ------------- Build Completed -------------
+@echo.
+
+@REM CALL "%ROOT%\bin\Rend.exe"
 
 popd

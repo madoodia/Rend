@@ -1,14 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36811.4 d17.14
+VisualStudioVersion = 17.14.36811.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "Rend", "Rend.exe", "{90693177-F20C-35D8-067F-7A1BCE77FB7D}"
 	ProjectSection(DebuggerProjectSystem) = preProject
 		PortSupplier = 00000000-0000-0000-0000-000000000000
 		Executable = D:\madoodia\dev\Rend\bin\Rend.exe
 		RemoteMachine = DESKTOP-UVUSTR5
-		StartingDirectory = D:\madoodia\dev\Rend\bin
+		StartingDirectory = D:\madoodia\dev\Rend
 		Environment = Default
 		LaunchingEngine = 00000000-0000-0000-0000-000000000000
 		UseLegacyDebugEngines = No

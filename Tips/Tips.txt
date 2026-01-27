@@ -1,0 +1,8 @@
+// for reading header file of a bmp file and compare with ours
+FILE* InputFile = fopen("images/reference.bmp", "rb");
+if (InputFile)
+{
+	BitmapHeader RefHeader = {};
+	fread(&RefHeader, sizeof(RefHeader), 1, InputFile);
+	fclose(InputFile);
+}
