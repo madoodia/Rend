@@ -205,13 +205,13 @@ Dot(V3 a, V3 b)
 }
 
 inline f32
-LengthSqr(V3 v)
+Length(V3 v)
 {
 	return Dot(v, v);
 }
 
 inline f32
-Length(V3 v)
+LengthSqr(V3 v)
 {
 	f32 length = SquareRoot(Dot(v, v));
 	return length;

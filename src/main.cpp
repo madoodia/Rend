@@ -5,36 +5,45 @@
 
 int main(int, char**)
 {
-	V3 cameraPosition = V3f(0.0f, 10.0f, 1.0f);
-	V3 cameraZ = NOZ(V3f(0.0f, 0.0f, 0.0f) - cameraPosition);
-	V3 cameraX = NOZ(Cross(V3f(0.0f, 1.0f, 0.0f), cameraZ));
+	V3 cameraPosition = V3f(0.0f, 10.0f, -2.0f);
+	V3 cameraZ = NOZ(cameraPosition);
+	V3 cameraX = NOZ(Cross(cameraZ, V3f(0.0f, 0.0f, 1.0f)));
 	V3 cameraY = NOZ(Cross(cameraZ, cameraX));
 	// f32 Fov = 90.0f;
 
-	Material materials[2] = {};
-	materials[0].color = V3f(0.5f, 0.5f, 0.5f);
-	materials[1].color = V3f(1.0f, 0.0f, 0.0f);
+	Material materials[3] = {};
+	materials[0].color = V3f(0.2f, 0.4f, 0.6f);
+	materials[1].color = V3f(0.3f, 0.25f, 0.2f);
+	materials[2].color = V3f(0.0f, 0.0f, 0.5f);
 
 	Plane ground = {};
-	ground.normal = V3f(0.0f, 1.0f, 0.0f);
+	ground.normal = V3f(0.0f, 0.0f, -1.0f);
 	ground.distance = 0.0f;
 	ground.MaterialIndex = 1;
 
+	Sphere sphere = {};
+	sphere.center = V3f(0.0f, 1.0f, -0.5f);
+	sphere.radius = 1.0f;
+	sphere.MaterialIndex = 2;
+
 	World world = {};
 	world.materials = materials;
-	world.materialCount = 2;
+	world.materialCount = 3;
 	world.planes = &ground;
 	world.planeCount = 1;
-	world.spheres = nullptr;
-	world.sphereCount = 0;
+	world.spheres = &sphere;
+	world.sphereCount = 1;
 
-	ImageBuffer image = AllocateImage(1280, 720);
+	ImageBuffer image = AllocateImage(720, 720);
 
 	u32* finalOutput = image.pixels;
-
 	f32 filmDistance = 1.0f;
 	f32 filmWidth = 1.0f;
 	f32 filmHeight = 1.0f;
+	if (image.width > image.height)
+		filmHeight = filmWidth * ((f32)image.height / (f32)image.width);
+	else if (image.height > image.width)
+		filmWidth = filmHeight * ((f32)image.width / (f32)image.height);
 	f32 halfFilmWidth = filmWidth * 0.5f;
 	f32 halfFilmHeight = filmHeight * 0.5f;
 	V3 filmCenter = cameraPosition - cameraZ * filmDistance;
@@ -65,23 +74,6 @@ int main(int, char**)
 		}
 
 		WriteImage(image, "output/final_render.bmp");
-	}
-	{
-		TimeStamp Timer("Summation 1");
-		int sum = 0;
-		for (int i = 0; i < 1000000; i++)
-		{
-			sum += i;
-		}
-	}
-	{
-		TimeStamp Timer("Summation 2");
-		int sum = 0;
-		for (int i = 0; i < 1000000; i++)
-		{
-			sum += i;
-		}
-		printf("Sum: %d\n", sum);
 	}
 
 	return 0;

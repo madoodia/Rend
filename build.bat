@@ -68,6 +68,6 @@ for /f "tokens=*" %%A in ('"%ROOT%\bin\timer.exe" e') do set ELAPSED=%%A
 @echo ------------- Build Completed -------------
 @echo.
 
-@REM CALL "%ROOT%\bin\Rend.exe"
+CALL "%ROOT%\bin\Rend.exe"
 
 popd
