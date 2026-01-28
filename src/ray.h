@@ -84,7 +84,7 @@ RayCast(World* world, V3 rayOrigin, V3 rayDirection)
 			f32 t1 = (-b - sqrtDiscriminant) / denom;
 
 			f32 t = (t0 < t1) ? t0 : t1;
-			if ((t < hitDistance) && (t > 0.0f))
+			if ((t < hitDistance) && (t > 0.0001f))
 			{
 				hitDistance = t;
 				result = world->materials[sphere.MaterialIndex].color;

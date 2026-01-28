@@ -189,13 +189,14 @@ V4f(V3 v, f32 w)
 inline f32
 Square(f32 value)
 {
-	return (value * value);
+	f32 result = (value * value);
+	return result;
 }
 
 inline f32
 SquareRoot(f32 value)
 {
-	return sqrtf(value);
+	return (f32)sqrt(value);
 }
 
 inline f32
@@ -205,15 +206,16 @@ Dot(V3 a, V3 b)
 }
 
 inline f32
-Length(V3 v)
+LengthSqr(V3 v)
 {
-	return Dot(v, v);
+	f32 length = Dot(v, v);
+	return length;
 }
 
 inline f32
-LengthSqr(V3 v)
+Length(V3 v)
 {
-	f32 length = SquareRoot(Dot(v, v));
+	f32 length = SquareRoot(LengthSqr(v));
 	return length;
 }
 

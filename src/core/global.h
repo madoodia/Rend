@@ -45,8 +45,8 @@ struct BitmapHeader
 	u16 reserved2;
 	u32 bitmapOffset;
 	u32 size;
-	s32 width;
-	s32 height;
+	u32 width;
+	u32 height;
 	u16 planes;
 	u16 bitsPerPixel;
 	u32 compression;

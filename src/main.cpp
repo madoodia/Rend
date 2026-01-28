@@ -2,10 +2,12 @@
 
 #include "ray.h"
 #include "utils.h"
+#include "global.h"
 
 int main(int, char**)
 {
-	V3 cameraPosition = V3f(0.0f, 10.0f, -2.0f);
+
+	V3 cameraPosition = V3f(0.0f, 8.0f, -1.0f);
 	V3 cameraZ = NOZ(cameraPosition);
 	V3 cameraX = NOZ(Cross(cameraZ, V3f(0.0f, 0.0f, 1.0f)));
 	V3 cameraY = NOZ(Cross(cameraZ, cameraX));
@@ -17,12 +19,12 @@ int main(int, char**)
 	materials[2].color = V3f(0.0f, 0.0f, 0.5f);
 
 	Plane ground = {};
-	ground.normal = V3f(0.0f, 0.0f, -1.0f);
+	ground.normal = V3f(0.0f, 0.0f, 1.0f);
 	ground.distance = 0.0f;
 	ground.MaterialIndex = 1;
 
 	Sphere sphere = {};
-	sphere.center = V3f(0.0f, 1.0f, -0.5f);
+	sphere.center = V3f(0.0f, 0.0f,-1.0f);
 	sphere.radius = 1.0f;
 	sphere.MaterialIndex = 2;
 
@@ -34,16 +36,15 @@ int main(int, char**)
 	world.spheres = &sphere;
 	world.sphereCount = 1;
 
-	ImageBuffer image = AllocateImage(720, 720);
+	ImageBuffer image = AllocateImage(1920, 1080);
 
 	u32* finalOutput = image.pixels;
 	f32 filmDistance = 1.0f;
+	f32 aspectRatio = (f32)image.width / (f32)image.height;
 	f32 filmWidth = 1.0f;
 	f32 filmHeight = 1.0f;
-	if (image.width > image.height)
-		filmHeight = filmWidth * ((f32)image.height / (f32)image.width);
-	else if (image.height > image.width)
-		filmWidth = filmHeight * ((f32)image.width / (f32)image.height);
+	filmWidth = filmHeight * aspectRatio;
+	filmHeight = filmWidth / aspectRatio;
 	f32 halfFilmWidth = filmWidth * 0.5f;
 	f32 halfFilmHeight = filmHeight * 0.5f;
 	V3 filmCenter = cameraPosition - cameraZ * filmDistance;
@@ -54,12 +55,12 @@ int main(int, char**)
 			 y < image.height;
 			 ++y)
 		{
-			f32 filmY = -1.0f + 2.0f * (f32)y / (f32)image.height;
+			f32 filmY = -1.0f + 2.0f * ((f32)y / (f32)image.height);
 			for (u32 x = 0;
 				 x < image.width;
 				 ++x)
 			{
-				f32 filmX = -1.0f + 2.0f * (f32)x / (f32)image.width;
+				f32 filmX = -1.0f + 2.0f * ((f32)x / (f32)image.width);
 				V3 filmPoint = filmCenter + halfFilmWidth * cameraX * filmX + halfFilmHeight * cameraY * filmY;
 
 				V3 rayOrigin = cameraPosition;

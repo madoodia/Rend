@@ -55,7 +55,7 @@ private:
 internal u32
 GetTotalPixelSize(ImageBuffer image)
 {
-	return image.width * image.height * sizeof(u32);
+	return (u32)image.width * ((u32)image.height * sizeof(u32));
 }
 
 internal ImageBuffer
@@ -65,8 +65,8 @@ AllocateImage(u32 width, u32 height)
 	image.width = width;
 	image.height = height;
 
-	u32 outputSize = GetTotalPixelSize(image);
-	image.pixels = (u32*)malloc(outputSize);
+	u32 pixelSize = GetTotalPixelSize(image);
+	image.pixels = (u32*)malloc(pixelSize);
 
 	return image;
 }
@@ -74,20 +74,20 @@ AllocateImage(u32 width, u32 height)
 internal void
 WriteImage(ImageBuffer image, const char* filename)
 {
-	u32 outputSize = GetTotalPixelSize(image);
+	u32 pixelSize = GetTotalPixelSize(image);
 	BitmapHeader bmpHeader = {};
 	bmpHeader.fileType = 0x4D42; // 'BMP'
-	bmpHeader.fileSize = sizeof(bmpHeader) + outputSize;
+	bmpHeader.fileSize = sizeof(bmpHeader) + pixelSize;
 	bmpHeader.reserved1 = 0;
 	bmpHeader.reserved2 = 0;
 	bmpHeader.bitmapOffset = sizeof(bmpHeader);
 	bmpHeader.size = sizeof(bmpHeader) - 14;
-	bmpHeader.width = image.width;
-	bmpHeader.height = image.height;
+	bmpHeader.width = (u32)image.width;
+	bmpHeader.height = (u32)image.height;
 	bmpHeader.planes = 1;
 	bmpHeader.bitsPerPixel = 32;
 	bmpHeader.compression = 0;
-	bmpHeader.sizeOfBitmap = outputSize;
+	bmpHeader.sizeOfBitmap = pixelSize;
 	bmpHeader.horzResolution = 0;
 	bmpHeader.vertResolution = 0;
 	bmpHeader.colorUsed = 0;
@@ -98,7 +98,7 @@ WriteImage(ImageBuffer image, const char* filename)
 	if (outputFile)
 	{
 		fwrite(&bmpHeader, sizeof(bmpHeader), 1, outputFile);
-		fwrite(image.pixels, outputSize, 1, outputFile);
+		fwrite(image.pixels, pixelSize, 1, outputFile);
 		fclose(outputFile);
 	}
 	else
