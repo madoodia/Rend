@@ -6,27 +6,20 @@
 
 int main(int, char**)
 {
-
-	V3 cameraPosition = V3f(0.0f, 8.0f, -1.0f);
-	V3 cameraZ = NOZ(cameraPosition);
-	V3 cameraX = NOZ(Cross(cameraZ, V3f(0.0f, 0.0f, 1.0f)));
-	V3 cameraY = NOZ(Cross(cameraZ, cameraX));
-	// f32 Fov = 90.0f;
-
 	Material materials[3] = {};
-	materials[0].color = V3f(0.2f, 0.4f, 0.6f);
-	materials[1].color = V3f(0.3f, 0.25f, 0.2f);
-	materials[2].color = V3f(0.0f, 0.0f, 0.5f);
+	materials[0].emitColor = V3f(0.2f, 0.4f, 0.6f);
+	materials[1].refColor = V3f(0.5f, 0.5f, 0.5f);
+	materials[2].refColor = V3f(0.1f, 0.3f, 0.7f);
 
 	Plane ground = {};
 	ground.normal = V3f(0.0f, 0.0f, 1.0f);
 	ground.distance = 0.0f;
-	ground.MaterialIndex = 1;
+	ground.matIndex = 1;
 
 	Sphere sphere = {};
-	sphere.center = V3f(0.0f, 0.0f,-1.0f);
+	sphere.center = V3f(0.0f, 0.0f, 0.0f);
 	sphere.radius = 1.0f;
-	sphere.MaterialIndex = 2;
+	sphere.matIndex = 2;
 
 	World world = {};
 	world.materials = materials;
@@ -37,6 +30,12 @@ int main(int, char**)
 	world.sphereCount = 1;
 
 	ImageBuffer image = AllocateImage(1920, 1080);
+
+	V3 cameraPosition = V3f(0.0f, -5.0f, 1.5f);
+	V3 cameraZ = NOZ(cameraPosition);
+	V3 cameraX = NOZ(Cross(V3f(0.0f, 0.0f, 1.0f), cameraZ));
+	V3 cameraY = NOZ(Cross(cameraZ, cameraX));
+	// f32 Fov = 90.0f;
 
 	u32* finalOutput = image.pixels;
 	f32 filmDistance = 1.0f;

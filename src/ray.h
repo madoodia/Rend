@@ -7,21 +7,22 @@
 
 struct Material
 {
-	V3 color;
+	V3 emitColor;
+	V3 refColor;
 };
 
 struct Plane
 {
 	V3 normal;
 	f32 distance;
-	u32 MaterialIndex;
+	u32 matIndex;
 };
 
 struct Sphere
 {
 	V3 center;
 	f32 radius;
-	u32 MaterialIndex;
+	u32 matIndex;
 };
 
 struct World
@@ -39,58 +40,91 @@ struct World
 internal V3
 RayCast(World* world, V3 rayOrigin, V3 rayDirection)
 {
-	V3 result = world->materials[0].color; // Background color
 
-	f32 hitDistance = F32MAX;
 	f32 tolerance = 0.0001f;
+	f32 minHitDist = 0.001f;
 
-	// Planes
-	for (u32 index = 0;
-		 index < world->planeCount;
-		 ++index)
+	V3 result = {};
+	V3 attenuation = V3f(1.0f, 1.0f, 1.0f);
+	for (u32 rayCount = 0;
+		 rayCount < 8;
+		 ++rayCount)
 	{
-		Plane plane = world->planes[index];
+		f32 hitDistance = F32MAX;
+		u32 hitMatIndex = 0;
+		V3 nextOrigin = {};
+		V3 nextNormal = {};
 
-		f32 denom = Dot(plane.normal, rayDirection);
-		if ((denom < -tolerance) || (denom > tolerance))
+		// Planes
+		for (u32 index = 0;
+			 index < world->planeCount;
+			 ++index)
 		{
-			f32 t = (-plane.distance - Dot(plane.normal, rayOrigin)) / denom;
-			if ((t < hitDistance) && (t > 0.0f))
+			Plane plane = world->planes[index];
+
+			f32 denom = Dot(plane.normal, rayDirection);
+			if ((denom < -tolerance) > (denom > tolerance))
 			{
-				hitDistance = t;
-				result = world->materials[plane.MaterialIndex].color;
+				f32 t = (-plane.distance - Dot(plane.normal, rayOrigin)) / denom;
+				if ((t < hitDistance) && (t > minHitDist))
+				{
+					hitDistance = t;
+					hitMatIndex = plane.matIndex;
+
+					nextOrigin = t * rayDirection;
+					nextNormal = plane.normal;
+				}
 			}
 		}
-	}
 
-	// Spheres
-	for (u32 index = 0;
-		 index < world->sphereCount;
-		 ++index)
-	{
-		Sphere sphere = world->spheres[index];
-
-		V3 sphereToOrigin = rayOrigin - sphere.center;
-		f32 a = Dot(rayDirection, rayDirection);
-		f32 b = 2.0f * Dot(rayDirection, sphereToOrigin);
-		f32 c = Dot(sphereToOrigin, sphereToOrigin) - (sphere.radius * sphere.radius);
-
-		f32 discriminant = b * b - 4.0f * a * c;
-		if (discriminant >= tolerance)
+		// Spheres
+		for (u32 index = 0;
+			 index < world->sphereCount;
+			 ++index)
 		{
-			f32 sqrtDiscriminant = SquareRoot(discriminant);
+			Sphere sphere = world->spheres[index];
+
+			V3 sphereToOrigin = rayOrigin - sphere.center;
+			f32 a = Dot(rayDirection, rayDirection);
+			f32 b = 2.0f * Dot(rayDirection, sphereToOrigin);
+			f32 c = Dot(sphereToOrigin, sphereToOrigin) - (sphere.radius * sphere.radius);
+
 			f32 denom = 2.0f * a;
-			f32 t0 = (-b + sqrtDiscriminant) / denom;
-			f32 t1 = (-b - sqrtDiscriminant) / denom;
-
-			f32 t = (t0 < t1) ? t0 : t1;
-			if ((t < hitDistance) && (t > 0.0001f))
+			f32 root = SquareRoot(b * b - 4.0f * a * c);
+			if (root > tolerance)
 			{
-				hitDistance = t;
-				result = world->materials[sphere.MaterialIndex].color;
+				f32 tp = (-b + root) / denom;
+				f32 tn = (-b - root) / denom;
+
+				f32 t = tp;
+				if ((tn > minHitDist) && (tn < tp))
+					t = tn;
+				if ((t > minHitDist) && (t < hitDistance))
+				{
+					hitDistance = t;
+					hitMatIndex = sphere.matIndex;
+
+					nextOrigin = t * rayDirection;
+					nextNormal = NOZ(nextOrigin - sphere.center);
+				}
 			}
 		}
-	}
 
+		if (hitMatIndex)
+		{
+			Material hitMat = world->materials[hitMatIndex];
+			result += Hadamard(attenuation, hitMat.emitColor);
+			attenuation = Hadamard(attenuation, hitMat.refColor);
+
+			rayOrigin = nextOrigin;
+			rayDirection = nextNormal;
+		}
+		else
+		{
+			Material hitMat = world->materials[hitMatIndex];
+			result += Hadamard(attenuation, hitMat.emitColor);
+			break;
+		}
+	}
 	return result;
 }

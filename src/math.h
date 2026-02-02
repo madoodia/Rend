@@ -128,6 +128,16 @@ operator*(V3 a, f32 b)
 }
 
 inline V3
+operator*(V3 a, V3 b)
+{
+	V3 result;
+	result.x = a.x * b.x;
+	result.y = a.y * b.y;
+	result.z = a.z * b.z;
+	return result;
+}
+
+inline V3
 operator-(V3 a, V3 b)
 {
 	V3 result;
@@ -137,14 +147,31 @@ operator-(V3 a, V3 b)
 	return result;
 }
 
+inline V2
+operator+=(V2 a, V2 b)
+{
+	a.x += b.x;
+	a.y += b.y;
+	return a;
+}
+
 inline V3
-operator+(V3 a, V3 b)
+operator+(const V3 a, const V3 b)
 {
 	V3 result;
 	result.x = a.x + b.x;
 	result.y = a.y + b.y;
 	result.z = a.z + b.z;
 	return result;
+}
+
+inline V3&
+operator+=(V3& a, V3 b)
+{
+	a.x += b.x;
+	a.y += b.y;
+	a.z += b.z;
+	return a;
 }
 
 inline V2
@@ -162,6 +189,15 @@ V3f(f32 x, f32 y, f32 z)
 	result.x = x;
 	result.y = y;
 	result.z = z;
+	return result;
+}
+inline V3
+V3f(u32 x, u32 y, u32 z)
+{
+	V3 result;
+	result.x = (f32)x;
+	result.y = (f32)y;
+	result.z = (f32)z;
 	return result;
 }
 inline V4
@@ -186,23 +222,49 @@ V4f(V3 v, f32 w)
 	return result;
 }
 
+inline V2
+Hadamard(V2 A, V2 B)
+{
+	V2 result = {A.x * B.x,
+				 A.y * B.y};
+	return result;
+}
+
+inline V3
+Hadamard(V3 A, V3 B)
+{
+	V3 result = {A.x * B.x,
+				 A.y * B.y,
+				 A.z * B.z};
+	return result;
+}
+
 inline f32
 Square(f32 value)
 {
-	f32 result = (value * value);
+	f32 result = value * value;
 	return result;
 }
 
 inline f32
 SquareRoot(f32 value)
 {
-	return (f32)sqrt(value);
+	f32 result = (f32)sqrt(value);
+	return result;
+}
+
+inline f32
+Dot(V2 a, V2 b)
+{
+	f32 result = a.x * b.x + a.y * b.y;
+	return result;
 }
 
 inline f32
 Dot(V3 a, V3 b)
 {
-	return (a.x * b.x + a.y * b.y + a.z * b.z);
+	f32 result = a.x * b.x + a.y * b.y + a.z * b.z;
+	return result;
 }
 
 inline f32
@@ -238,12 +300,15 @@ Normalize(V3 v)
 inline V3
 NOZ(V3 v)
 {
-	V3 result = v;
-	f32 lengthSqr = LengthSqr(v);
-	if (lengthSqr > Square(0.0001f))
+	V3 result = {};
+
+	f32 lenSqr = LengthSqr(v);
+	if (lenSqr > Square(0.0001f))
 	{
-		result = v * (1.0f / SquareRoot(lengthSqr));
+		f32 invLen = 1.0f / SquareRoot(lenSqr);
+		result = v * invLen;
 	}
+
 	return result;
 }
 
