@@ -21,6 +21,8 @@
 #define INV_PI 0.31830988618f
 #define HALF_PI 1.57079632679f
 
+#define ARRAY_COUNT(arr) (sizeof(arr) / sizeof((arr)[0]))
+
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;

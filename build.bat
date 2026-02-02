@@ -28,13 +28,13 @@ SET TIMER_CXXFLAGS=-O2 -nologo -std:c++17 -D_CRT_SECURE_NO_WARNINGS
 @REM  Need to link with advapi32.lib for registry functions
 SET TIMER_LINKERFLAGS=kernel32.lib advapi32.lib
 
-@REM Other warnings:
-SET CXXFLAGS=-Od -MTd -nologo -fp:fast -fp:except- -Gm- -GR- -EHa- -Zo -Oi -WX -W4 -FC -Z7  -D_CRT_SECURE_NO_WARNINGS -wd4201 -wd4505 -wd4100 -wd4189 -wd4127
+@REM Debug: -Od Release: -O2
+SET CXXFLAGS=-O2 -MTd -nologo -fp:fast -fp:except- -Gm- -GR- -EHa- -Zo -Oi -WX -W4 -FC -Z7  -D_CRT_SECURE_NO_WARNINGS -wd4201 -wd4505 -wd4100 -wd4189 -wd4127
 SET LIBS= user32.lib gdi32.lib kernel32.lib winmm.lib opengl32.lib advapi32.lib
 SET LINKERFLAGS=-opt:ref %LIBS%
 
 if not "%OTHER%"=="" (
-    @echo Building %OTHER%
+    @REM @echo Building %OTHER%
     cl /Isrc\core %CXXFLAGS% /Fo%ROOT%\build\\ "%ROOT%\tests\%OTHER%.cpp" /link %LINKERFLAGS% /OUT:"%ROOT%\bin\%OTHER%.exe"
     CALL "%ROOT%\bin\%OTHER%.exe"
     EXIT /B 0
@@ -53,19 +53,19 @@ IF NOT EXIST "%ROOT%\build" (
 
 SET SOURCES="%ROOT%\src\main.cpp"
 
-@echo ------------- Build Started -------------
+@REM @echo ------------- Build Started -------------
 call "%ROOT%\bin\timer.exe" s
 if exist "%ROOT%\bin\timer.exe" (
     cl /Isrc\core %CXXFLAGS% /Fo%ROOT%\build\\ %SOURCES% /link %LINKERFLAGS% /OUT:"%ROOT%\bin\Rend.exe"
 )
 
 for /f "tokens=*" %%A in ('"%ROOT%\bin\timer.exe" e') do set ELAPSED=%%A
-@echo Build Elapsed Time: %ELAPSED%
+@REM @echo Build Elapsed Time: %ELAPSED%
 
 @REM copy %ROOT%\build\*.dll %ROOT%\bin > NUL 2>&1
 @REM copy %ROOT%\build\*.exe %ROOT%\bin > NUL 2>&1
 
-@echo ------------- Build Completed -------------
+@REM @echo ------------- Build Completed -------------
 @echo.
 
 CALL "%ROOT%\bin\Rend.exe"

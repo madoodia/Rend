@@ -7,6 +7,7 @@
 
 struct Material
 {
+	f32 roughness;
 	V3 emitColor;
 	V3 refColor;
 };
@@ -52,7 +53,6 @@ RayCast(World* world, V3 rayOrigin, V3 rayDirection)
 	{
 		f32 hitDistance = F32MAX;
 		u32 hitMatIndex = 0;
-		V3 nextOrigin = {};
 		V3 nextNormal = {};
 
 		// Planes
@@ -63,7 +63,7 @@ RayCast(World* world, V3 rayOrigin, V3 rayDirection)
 			Plane plane = world->planes[index];
 
 			f32 denom = Dot(plane.normal, rayDirection);
-			if ((denom < -tolerance) > (denom > tolerance))
+			if ((denom < -tolerance) || (denom > tolerance))
 			{
 				f32 t = (-plane.distance - Dot(plane.normal, rayOrigin)) / denom;
 				if ((t < hitDistance) && (t > minHitDist))
@@ -71,7 +71,6 @@ RayCast(World* world, V3 rayOrigin, V3 rayDirection)
 					hitDistance = t;
 					hitMatIndex = plane.matIndex;
 
-					nextOrigin = t * rayDirection;
 					nextNormal = plane.normal;
 				}
 			}
@@ -104,8 +103,7 @@ RayCast(World* world, V3 rayOrigin, V3 rayDirection)
 					hitDistance = t;
 					hitMatIndex = sphere.matIndex;
 
-					nextOrigin = t * rayDirection;
-					nextNormal = NOZ(nextOrigin - sphere.center);
+					nextNormal = NOZ(t * rayDirection + sphereToOrigin);
 				}
 			}
 		}
@@ -114,10 +112,18 @@ RayCast(World* world, V3 rayOrigin, V3 rayDirection)
 		{
 			Material hitMat = world->materials[hitMatIndex];
 			result += Hadamard(attenuation, hitMat.emitColor);
-			attenuation = Hadamard(attenuation, hitMat.refColor);
+			f32 cosAtten = 1.0f;
+#if 0
+			cosAtten = Dot(-rayDirection, nextNormal);
+			if (cosAtten < 0.0f)
+				cosAtten = 0.0f;
+#endif
+			attenuation = Hadamard(attenuation, cosAtten * hitMat.refColor);
 
-			rayOrigin = nextOrigin;
-			rayDirection = nextNormal;
+			rayOrigin += hitDistance * rayDirection;
+			V3 reflectedRay = rayDirection - (Dot(rayDirection, nextNormal) * 2.0f * nextNormal);
+			V3 otherRays = NOZ(nextNormal + V3f(RandomBiF32(), RandomBiF32(), RandomBiF32()));
+			rayDirection = NOZ(Lerp(reflectedRay, otherRays, hitMat.roughness));
 		}
 		else
 		{

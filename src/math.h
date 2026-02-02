@@ -147,6 +147,16 @@ operator-(V3 a, V3 b)
 	return result;
 }
 
+inline V3
+operator-(V3 a)
+{
+	V3 result;
+	result.x = -a.x;
+	result.y = -a.y;
+	result.z = -a.z;
+	return result;
+}
+
 inline V2
 operator+=(V2 a, V2 b)
 {
@@ -162,6 +172,16 @@ operator+(const V3 a, const V3 b)
 	result.x = a.x + b.x;
 	result.y = a.y + b.y;
 	result.z = a.z + b.z;
+	return result;
+}
+
+inline V3
+operator+(V3 a, f32 b)
+{
+	V3 result;
+	result.x = a.x + b;
+	result.y = a.y + b;
+	result.z = a.z + b;
 	return result;
 }
 
@@ -318,6 +338,13 @@ Distance(V3 a, V3 b)
 	return Length(b - a);
 }
 
+inline V3
+Lerp(V3 a, V3 b, f32 t)
+{
+	V3 result = (1.0f - t) * a + t * b;
+	return result;
+}
+
 inline u32
 RoundF32ToU32(f32 value)
 {
@@ -363,5 +390,19 @@ BGRAUnpack4x8(u32 packed)
 	result.g = (f32)((packed >> 8) & 0xFF);
 	result.r = (f32)((packed >> 16) & 0xFF);
 	result.a = (f32)((packed >> 24) & 0xFF);
+	return result;
+}
+
+inline f32
+RandomUniF32()
+{
+	f32 result = (f32)rand() / (f32)RAND_MAX;
+	return result;
+}
+
+inline f32
+RandomBiF32()
+{
+	f32 result = 2.0f * RandomUniF32() - 1.0f;
 	return result;
 }

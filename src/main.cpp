@@ -6,29 +6,40 @@
 
 int main(int, char**)
 {
-	Material materials[3] = {};
+	Material materials[5] = {};
 	materials[0].emitColor = V3f(0.2f, 0.4f, 0.6f);
+	materials[1].roughness = 0.35f;
 	materials[1].refColor = V3f(0.7f, 0.7f, 0.7f);
+	materials[2].roughness = 1.0f;
 	materials[2].refColor = V3f(0.921f, 0.784f, 0.467f);
+	materials[3].roughness = 1.0f;
+	materials[3].emitColor = V3f(1.0f, 0.0f, 0.0f);
+	materials[4].roughness = 0.1f;
+	materials[4].refColor = V3f(0.64f, 0.7f, 0.921f);
 
-	Plane ground = {};
-	ground.normal = V3f(0.0f, 0.0f, 1.0f);
-	ground.distance = 0.0f;
-	ground.matIndex = 1;
+	Plane planes[1] = {};
+	planes[0].normal = V3f(0.0f, 0.0f, 1.0f);
+	planes[0].distance = 0.0f;
+	planes[0].matIndex = 1;
 
-	Sphere sphere = {};
-	sphere.center = V3f(0.0f, 0.0f, 0.0f);
-	sphere.radius = 1.0f;
-	sphere.matIndex = 2;
+	Sphere spheres[3] = {};
+	spheres[0].center = V3f(0.0f, 0.0f, 0.0f);
+	spheres[0].radius = 1.0f;
+	spheres[0].matIndex = 2;
+	spheres[1].center = V3f(2.5f, -1.5f, 0.0f);
+	spheres[1].radius = 1.0f;
+	spheres[1].matIndex = 3;
+	spheres[2].center = V3f(-2.0f, .5f, 2.0f);
+	spheres[2].radius = 1.0f;
+	spheres[2].matIndex = 4;
 
 	World world = {};
 	world.materials = materials;
-	world.materialCount = 3;
-	world.planes = &ground;
-	world.planeCount = 1;
-	world.spheres = &sphere;
-	world.sphereCount = 1;
-
+	world.materialCount = ARRAY_COUNT(materials);
+	world.planes = planes;
+	world.planeCount = ARRAY_COUNT(planes);
+	world.spheres = spheres;
+	world.sphereCount = ARRAY_COUNT(spheres);
 	ImageBuffer image = AllocateImage(1920, 1080);
 
 	V3 cameraPosition = V3f(0.0f, -5.0f, 0.9f);
@@ -50,6 +61,8 @@ int main(int, char**)
 
 	{
 		TimeStamp timer("Rendering");
+
+		u32 rayPerPixel = 16;
 		for (u32 y = 0;
 			 y < image.height;
 			 ++y)
@@ -60,12 +73,18 @@ int main(int, char**)
 				 ++x)
 			{
 				f32 filmX = -1.0f + 2.0f * ((f32)x / (f32)image.width);
-				V3 filmPoint = filmCenter + halfFilmWidth * cameraX * filmX + halfFilmHeight * cameraY * filmY;
+				V3 color = {};
+				f32 contribution = 1.0f / (f32)rayPerPixel;
+				for (u32 rayIndex = 0;
+					 rayIndex < rayPerPixel;
+					 ++rayIndex)
+				{
+					V3 filmPoint = filmCenter + halfFilmWidth * cameraX * filmX + halfFilmHeight * cameraY * filmY;
 
-				V3 rayOrigin = cameraPosition;
-				V3 rayDirection = NOZ(filmPoint - cameraPosition);
-				V3 color = RayCast(&world, rayOrigin, rayDirection);
-
+					V3 rayOrigin = cameraPosition;
+					V3 rayDirection = NOZ(filmPoint - cameraPosition);
+					color += contribution * RayCast(&world, rayOrigin, rayDirection);
+				}
 				V4 bmpColor = V4f(255.0f * color, 255.0f);
 				u32 bmpValue = BGRAPack4x8(bmpColor);
 
