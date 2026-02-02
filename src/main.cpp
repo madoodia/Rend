@@ -8,8 +8,8 @@ int main(int, char**)
 {
 	Material materials[3] = {};
 	materials[0].emitColor = V3f(0.2f, 0.4f, 0.6f);
-	materials[1].refColor = V3f(0.5f, 0.5f, 0.5f);
-	materials[2].refColor = V3f(0.1f, 0.3f, 0.7f);
+	materials[1].refColor = V3f(0.7f, 0.7f, 0.7f);
+	materials[2].refColor = V3f(0.921f, 0.784f, 0.467f);
 
 	Plane ground = {};
 	ground.normal = V3f(0.0f, 0.0f, 1.0f);
@@ -31,7 +31,7 @@ int main(int, char**)
 
 	ImageBuffer image = AllocateImage(1920, 1080);
 
-	V3 cameraPosition = V3f(0.0f, -5.0f, 1.5f);
+	V3 cameraPosition = V3f(0.0f, -5.0f, 0.9f);
 	V3 cameraZ = NOZ(cameraPosition);
 	V3 cameraX = NOZ(Cross(V3f(0.0f, 0.0f, 1.0f), cameraZ));
 	V3 cameraY = NOZ(Cross(cameraZ, cameraX));
