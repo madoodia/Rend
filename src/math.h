@@ -406,3 +406,10 @@ RandomBiF32()
 	f32 result = 2.0f * RandomUniF32() - 1.0f;
 	return result;
 }
+
+inline f32
+Power(f32 base, f32 exponent)
+{
+	f32 result = (f32)pow(base, exponent);
+	return result;
+}

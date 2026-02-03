@@ -106,3 +106,21 @@ WriteImage(ImageBuffer image, const char* filename)
 		fprintf(stderr, "[Error]: Could not open and write data to output file '%s'.\n", filename);
 	}
 }
+
+internal f32
+LinearToRGB(f32 linear)
+{
+
+	if (linear <= 0.0f)
+	{
+		linear = 0.0f;
+	}
+	else if (linear >= 1.0f)
+	{
+		linear = 1.0f;
+	}
+	f32 srgb = 12.92f * linear;
+	if (linear > 0.0031308f)
+		srgb = 1.055f * Power(linear, 1.0f / 2.4f) - 0.055f;
+	return srgb;
+}
