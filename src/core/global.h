@@ -6,9 +6,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <stdint.h>
+#include <stddef.h>
 
 #define internal static
 #define inline static
+#define global static
 
 #define U16MAX 0xFFFF
 #define U32MAX 0xFFFFFFFF
@@ -23,14 +26,15 @@
 
 #define ARRAY_COUNT(arr) (sizeof(arr) / sizeof((arr)[0]))
 
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
-typedef unsigned long long u64;
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
 
-typedef char s8;
-typedef short s16;
-typedef int s32;
+typedef int8_t s8;
+typedef int16_t s16;
+typedef int32_t s32;
+typedef int64_t s64;
 
 typedef s32 b32;
 typedef s32 b32x;

@@ -30,7 +30,7 @@ SET TIMER_LINKERFLAGS=kernel32.lib advapi32.lib
 
 @REM Debug: -Od Release: -O2
 SET CXXFLAGS=-O2 -MTd -nologo -fp:fast -fp:except- -Gm- -GR- -EHa- -Zo -Oi -WX -W4 -FC -Z7  -D_CRT_SECURE_NO_WARNINGS -wd4201 -wd4505 -wd4100 -wd4189 -wd4127
-SET LIBS= user32.lib gdi32.lib kernel32.lib winmm.lib opengl32.lib advapi32.lib
+SET LIBS= -incremental:no user32.lib gdi32.lib kernel32.lib winmm.lib opengl32.lib advapi32.lib
 SET LINKERFLAGS=-opt:ref %LIBS%
 
 if not "%OTHER%"=="" (

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <stdint.h>
 #include "global.h"
 
 internal uint64_t

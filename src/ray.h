@@ -36,24 +36,27 @@ struct World
 
 	Sphere* spheres;
 	u32 sphereCount;
+
+	u64 BouncesComputed;
 };
 
 internal V3
 RayCast(World* world, V3 rayOrigin, V3 rayDirection)
 {
-
 	f32 tolerance = 0.0001f;
 	f32 minHitDist = 0.001f;
 
 	V3 result = {};
-	V3 attenuation = V3f(1.0f, 1.0f, 1.0f);
-	for (u32 rayCount = 0;
-		 rayCount < 8;
-		 ++rayCount)
+	V3 attenuation = V3f(1.0f);
+	u32 bounceCount = 8; // TODO: Solve the problem of one bounceCount that render Objects Black
+	for (u32 bounceIndex = 0;
+		 bounceIndex < bounceCount;
+		 ++bounceIndex)
 	{
 		f32 hitDistance = F32MAX;
 		u32 hitMatIndex = 0;
 		V3 nextNormal = {};
+		++world->BouncesComputed;
 
 		// Planes
 		for (u32 index = 0;

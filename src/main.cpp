@@ -1,5 +1,7 @@
 /* (C) 2026 madoodia.com */
 
+#include <time.h>
+
 #include "ray.h"
 #include "utils.h"
 #include "global.h"
@@ -66,12 +68,12 @@ int main(int, char**)
 	f32 halfPixW = 0.5f / image.width;
 	f32 halfPixH = 0.5f / image.height;
 
-	u32 raysPerPixel = 16;
+	u32 raysPerPixel = 8;
 	u32* finalOutput = image.pixels;
 
 	{
-		TimeStamp timer("Rendering");
-
+		// TimeStamp timer("Rendering");
+		clock_t startTime = clock();
 		for (u32 y = 0;
 			 y < image.height;
 			 ++y)
@@ -108,6 +110,11 @@ int main(int, char**)
 				*finalOutput++ = bmpValue;
 			}
 		}
+		clock_t endTime = clock();
+		clock_t timeElapsed = endTime - startTime;
+		printf("Render Time: %dms\n", timeElapsed);
+		printf("Total Bounces: %llu\n", (u64)world.BouncesComputed);
+		printf("Performance: %fms/bounces\n", ((f64)timeElapsed / (f64)world.BouncesComputed));
 
 		WriteImage(image, "output/final_render.bmp");
 	}

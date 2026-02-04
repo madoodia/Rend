@@ -195,6 +195,24 @@ operator+=(V3& a, V3 b)
 }
 
 inline V2
+V2f(f32 x)
+{
+	V2 result;
+	result.x = x;
+	result.y = x;
+	return result;
+}
+
+inline V2
+V2f(u32 x)
+{
+	V2 result;
+	result.x = (f32)x;
+	result.y = (f32)x;
+	return result;
+}
+
+inline V2
 V2f(f32 x, f32 y)
 {
 	V2 result;
@@ -202,6 +220,36 @@ V2f(f32 x, f32 y)
 	result.y = y;
 	return result;
 }
+
+inline V2
+V2f(u32 x, u32 y)
+{
+	V2 result;
+	result.x = (f32)x;
+	result.y = (f32)y;
+	return result;
+}
+
+inline V3
+V3f(f32 x)
+{
+	V3 result;
+	result.x = x;
+	result.y = x;
+	result.z = x;
+	return result;
+}
+
+inline V3
+V3f(u32 x)
+{
+	V3 result;
+	result.x = (f32)x;
+	result.y = (f32)x;
+	result.z = (f32)x;
+	return result;
+}
+
 inline V3
 V3f(f32 x, f32 y, f32 z)
 {
@@ -325,8 +373,7 @@ NOZ(V3 v)
 	f32 lenSqr = LengthSqr(v);
 	if (lenSqr > Square(0.0001f))
 	{
-		f32 invLen = 1.0f / SquareRoot(lenSqr);
-		result = v * invLen;
+		result = v * (1.0f / SquareRoot(lenSqr));
 	}
 
 	return result;
