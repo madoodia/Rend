@@ -12,11 +12,11 @@ int main(int, char**)
 	materials[1].refColor = V3f(0.4f, 0.4f, 0.4f);
 	materials[2].roughness = 1.0f;
 	materials[2].refColor = V3f(0.921f, 0.784f, 0.467f);
-	materials[3].roughness = 1.0f;
+	materials[3].roughness = .7f;
 	materials[3].emitColor = V3f(1.0f, 0.0f, 0.0f);
-	materials[4].roughness = 0.1f;
+	materials[4].roughness = .05f;
 	materials[4].refColor = V3f(0.64f, 0.7f, 0.921f);
-	materials[5].roughness = 1.0f;
+	materials[5].roughness = .6f;
 	materials[5].refColor = V3f(0.95f, 0.95f, 0.95f);
 
 	Plane planes[1] = {};
