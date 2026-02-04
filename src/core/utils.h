@@ -123,3 +123,10 @@ LinearToRGB(f32 linear)
 		srgb = 1.055f * Power(linear, 1.0f / 2.4f) - 0.055f;
 	return srgb;
 }
+
+internal u32*
+GetPixelPointer(ImageBuffer image, u32 x, u32 y)
+{
+	u32* result = image.pixels + y * image.width + x;
+	return result;
+}
