@@ -7,7 +7,7 @@
 
 struct Material
 {
-	f32 roughness;
+	f32 scatter;
 	V3 emitColor;
 	V3 refColor;
 };
@@ -37,26 +37,28 @@ struct World
 	Sphere* spheres;
 	u32 sphereCount;
 
-	u64 BouncesComputed;
+	u64 bouncesComputed;
+	u32 tilesRenderedCount;
 };
 
 internal V3
-RayCast(World* world, V3 rayOrigin, V3 rayDirection)
+RayCast(World* world, V3 rayOrigin, V3 rayDirection, f32 contribution)
 {
 	f32 tolerance = 0.0001f;
 	f32 minHitDist = 0.001f;
+	u64 bounceComputed = 0;
 
-	V3 result = {};
-	V3 attenuation = V3f(1.0f);
-	u32 bounceCount = 8; // TODO: Solve the problem of one bounceCount that render Objects Black
+	V3 sample = {};
+	V3 attenuation = V3f(1.0f, 1.0f, 1.0f);
+	u32 bouncesCount = 32; // TODO: Solve the problem of one bouncesCount that render Objects Black
 	for (u32 bounceIndex = 0;
-		 bounceIndex < bounceCount;
+		 bounceIndex < bouncesCount;
 		 ++bounceIndex)
 	{
+		++bounceComputed;
 		f32 hitDistance = F32MAX;
 		u32 hitMatIndex = 0;
 		V3 nextNormal = {};
-		++world->BouncesComputed;
 
 		// Planes
 		for (u32 index = 0;
@@ -114,26 +116,26 @@ RayCast(World* world, V3 rayOrigin, V3 rayDirection)
 		if (hitMatIndex)
 		{
 			Material hitMat = world->materials[hitMatIndex];
-			result += Hadamard(attenuation, hitMat.emitColor);
-			f32 cosAtten = 1.0f;
-#if 0
-			cosAtten = Dot(-rayDirection, nextNormal);
+			sample += Hadamard(attenuation, hitMat.emitColor);
+			f32 cosAtten = 1.0f; // Dot(-rayDirection, nextNormal);
 			if (cosAtten < 0.0f)
 				cosAtten = 0.0f;
-#endif
 			attenuation = Hadamard(attenuation, cosAtten * hitMat.refColor);
 
 			rayOrigin += hitDistance * rayDirection;
-			V3 reflectedRay = rayDirection - (Dot(rayDirection, nextNormal) * 2.0f * nextNormal);
-			V3 otherRays = NOZ(nextNormal + V3f(RandomBiF32(), RandomBiF32(), RandomBiF32()));
-			rayDirection = NOZ(Lerp(reflectedRay, otherRays, hitMat.roughness));
+			V3 mainBounce = rayDirection - (Dot(rayDirection, nextNormal) * 2.0f * nextNormal);
+			V3 otherBounce = NOZ(nextNormal + V3f(RandomBiF32(), RandomBiF32(), RandomBiF32()));
+			rayDirection = NOZ(Lerp(mainBounce, otherBounce, hitMat.scatter));
 		}
 		else
 		{
 			Material hitMat = world->materials[hitMatIndex];
-			result += Hadamard(attenuation, hitMat.emitColor);
+			sample += Hadamard(attenuation, hitMat.emitColor);
 			break;
 		}
 	}
-	return result;
+
+	world->bouncesComputed += bounceComputed;
+
+	return sample;
 }

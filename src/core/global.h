@@ -10,7 +10,6 @@
 #include <stddef.h>
 
 #define internal static
-#define inline static
 #define global static
 
 #define U16MAX 0xFFFF

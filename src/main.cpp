@@ -9,7 +9,6 @@
 internal void
 RenderTile(World* world, ImageBuffer image, u32 minX, u32 minY, u32 maxX, u32 maxY)
 {
-
 	V3 cameraPosition = V3f(0.0f, -10.0f, 1.0f);
 	V3 cameraZ = NOZ(cameraPosition);
 	V3 cameraX = NOZ(Cross(V3f(0.0f, 0.0f, 1.0f), cameraZ));
@@ -29,7 +28,8 @@ RenderTile(World* world, ImageBuffer image, u32 minX, u32 minY, u32 maxX, u32 ma
 	f32 halfPixW = 0.5f / image.width;
 	f32 halfPixH = 0.5f / image.height;
 
-	u32 raysPerPixel = 8;
+	u32 raysPerPixel = 32;
+	f32 contribution = 1.0f / (f32)raysPerPixel;
 
 	for (u32 y = minY;
 		 y < maxY;
@@ -41,10 +41,11 @@ RenderTile(World* world, ImageBuffer image, u32 minX, u32 minY, u32 maxX, u32 ma
 			 x < maxX;
 			 ++x)
 		{
+			V3 sample = {};
+			V3 finalColor = {};
+
 			f32 filmX = -1.0f + 2.0f * ((f32)x / (f32)image.width);
 
-			V3 color = {};
-			f32 contribution = 1.0f / (f32)raysPerPixel;
 			for (u32 rayIndex = 0;
 				 rayIndex < raysPerPixel;
 				 ++rayIndex)
@@ -55,35 +56,37 @@ RenderTile(World* world, ImageBuffer image, u32 minX, u32 minY, u32 maxX, u32 ma
 
 				V3 rayOrigin = cameraPosition;
 				V3 rayDirection = NOZ(filmPoint - cameraPosition);
-				color += contribution * RayCast(world, rayOrigin, rayDirection);
+				sample += RayCast(world, rayOrigin, rayDirection, contribution);
 			}
+			finalColor += contribution * sample;
 			V4 bmpColor = {
-				255.0f * LinearToRGB(color.r),
-				255.0f * LinearToRGB(color.g),
-				255.0f * LinearToRGB(color.b),
+				255.0f * LinearToRGB(finalColor.r),
+				255.0f * LinearToRGB(finalColor.g),
+				255.0f * LinearToRGB(finalColor.b),
 				255.0f};
 
 			u32 bmpValue = BGRAPack4x8(bmpColor);
-
 			*finalOutput++ = bmpValue;
 		}
 	}
+
+	++world->tilesRenderedCount;
 }
 
 int main(int, char**)
 {
 	Material materials[6] = {};
 	materials[0].emitColor = V3f(0.2f, 0.4f, 0.6f);
-	materials[1].roughness = 0.5f;
+	materials[1].scatter = 1.0f;
 	materials[1].refColor = V3f(0.4f, 0.4f, 0.4f);
-	materials[2].roughness = 1.0f;
+	materials[2].scatter = 1.0f;
 	materials[2].refColor = V3f(0.921f, 0.784f, 0.467f);
-	materials[3].roughness = .7f;
-	materials[3].emitColor = V3f(1.0f, 0.0f, 0.0f);
-	materials[4].roughness = .05f;
+	materials[3].scatter = 1.0f;
+	materials[3].emitColor = V3f(2.2f, 0.0f, 0.0f);
+	materials[4].scatter = .25f;
 	materials[4].refColor = V3f(0.64f, 0.7f, 0.921f);
-	materials[5].roughness = .6f;
-	materials[5].refColor = V3f(0.95f, 0.95f, 0.95f);
+	materials[5].scatter = .02f;
+	materials[5].refColor = V3f(0.18f);
 
 	Plane planes[1] = {};
 	planes[0].normal = V3f(0.0f, 0.0f, 1.0f);
@@ -97,7 +100,7 @@ int main(int, char**)
 	spheres[1].center = V3f(2.5f, -1.5f, 0.0f);
 	spheres[1].radius = 1.0f;
 	spheres[1].matIndex = 3;
-	spheres[2].center = V3f(-2.0f, .5f, 2.0f);
+	spheres[2].center = V3f(-1.0f, -0.5f, 2.0f);
 	spheres[2].radius = 1.0f;
 	spheres[2].matIndex = 4;
 	spheres[3].center = V3f(-3.0f, 3.0f, 1.0f);
@@ -111,17 +114,47 @@ int main(int, char**)
 	world.planeCount = ARRAY_COUNT(planes);
 	world.spheres = spheres;
 	world.sphereCount = ARRAY_COUNT(spheres);
-	ImageBuffer image = AllocateImage(1920, 1080);
+	ImageBuffer image = AllocateImage(1280, 720);
 
 	clock_t startTime = clock();
 
-	RenderTile(&world, image, 0, 0, image.width, image.height);
-	
+	u32 coreCount = 8;
+	u32 tileWidth = image.width / coreCount;
+	u32 tileHeight = tileWidth;
+	printf("Configurations: %d Cores with %dx%d (%dk) tiles.\n", coreCount, tileWidth, tileHeight, (tileWidth * tileHeight) * 4 / 1024);
+
+	u32 tileCountX = (image.width + tileWidth - 1) / tileWidth;
+	u32 tileCountY = (image.height + tileHeight - 1) / tileHeight;
+	u32 totalTilesCount = tileCountX * tileCountY;
+
+	for (u32 tileY = 0;
+		 tileY < tileCountY;
+		 ++tileY)
+	{
+		u32 minY = tileY * tileHeight;
+		u32 maxY = minY + tileHeight;
+		if (maxY > image.height)
+			maxY = image.height;
+		for (u32 tileX = 0;
+			 tileX < tileCountX;
+			 ++tileX)
+		{
+			u32 minX = tileX * tileWidth;
+			u32 maxX = minX + tileWidth;
+			if (maxX > image.width)
+				maxX = image.width;
+			RenderTile(&world, image, minX, minY, maxX, maxY);
+			if ((world.tilesRenderedCount % 10) == 0)
+				printf("Progress: %d%% ...\n", 100 * world.tilesRenderedCount / totalTilesCount);
+			fflush(stdout);
+		}
+	}
+
 	clock_t endTime = clock();
 	clock_t timeElapsed = endTime - startTime;
 	printf("Render Time: %dms\n", timeElapsed);
-	printf("Total Bounces: %llu\n", (u64)world.BouncesComputed);
-	printf("Performance: %fms/bounces\n", ((f64)timeElapsed / (f64)world.BouncesComputed));
+	printf("Total Bounces: %llu\n", (u64)world.bouncesComputed);
+	printf("Performance: %fms/bounces\n", ((f64)timeElapsed / (f64)world.bouncesComputed));
 
 	WriteImage(image, "output/final_render.bmp");
 
