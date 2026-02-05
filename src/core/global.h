@@ -8,9 +8,13 @@
 #include <string>
 #include <stdint.h>
 #include <stddef.h>
+#include <stddef.h>
+#include <assert.h>
 
 #define internal static
 #define global static
+
+#define Assert assert
 
 #define U16MAX 0xFFFF
 #define U32MAX 0xFFFFFFFF

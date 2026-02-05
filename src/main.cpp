@@ -7,7 +7,7 @@
 #include "global.h"
 
 internal void
-RenderTile(World* world, ImageBuffer image, u32 minX, u32 minY, u32 maxX, u32 maxY)
+RenderTile(WorkQueue* workQueue, WorkOrder* workOrder)
 {
 	V3 cameraPosition = V3f(0.0f, -10.0f, 1.0f);
 	V3 cameraZ = NOZ(cameraPosition);
@@ -18,33 +18,33 @@ RenderTile(World* world, ImageBuffer image, u32 minX, u32 minY, u32 maxX, u32 ma
 	f32 filmDistance = 1.0f;
 	f32 filmWidth = 1.0f;
 	f32 filmHeight = 1.0f;
-	if (image.width > image.height)
-		filmHeight = filmWidth * (f32)image.height / (f32)image.width;
-	else if (image.height > image.width)
-		filmWidth = filmHeight * (f32)image.width / (f32)image.height;
+	if (workOrder->image.width > workOrder->image.height)
+		filmHeight = filmWidth * (f32)workOrder->image.height / (f32)workOrder->image.width;
+	else if (workOrder->image.height > workOrder->image.width)
+		filmWidth = filmHeight * (f32)workOrder->image.width / (f32)workOrder->image.height;
 	f32 halfFilmWidth = filmWidth * 0.5f;
 	f32 halfFilmHeight = filmHeight * 0.5f;
 	V3 filmCenter = cameraPosition - cameraZ * filmDistance;
-	f32 halfPixW = 0.5f / image.width;
-	f32 halfPixH = 0.5f / image.height;
+	f32 halfPixW = 0.5f / workOrder->image.width;
+	f32 halfPixH = 0.5f / workOrder->image.height;
 
-	u32 raysPerPixel = 32;
+	u32 raysPerPixel = 16;
 	f32 contribution = 1.0f / (f32)raysPerPixel;
 
-	for (u32 y = minY;
-		 y < maxY;
+	for (u32 y = workOrder->minY;
+		 y < workOrder->maxY;
 		 ++y)
 	{
-		u32* finalOutput = GetPixelPointer(image, minX, y);
-		f32 filmY = -1.0f + 2.0f * ((f32)y / (f32)image.height);
-		for (u32 x = minX;
-			 x < maxX;
+		u32* finalOutput = GetPixelPointer(workOrder->image, workOrder->minX, y);
+		f32 filmY = -1.0f + 2.0f * ((f32)y / (f32)workOrder->image.height);
+		for (u32 x = workOrder->minX;
+			 x < workOrder->maxX;
 			 ++x)
 		{
 			V3 sample = {};
 			V3 finalColor = {};
 
-			f32 filmX = -1.0f + 2.0f * ((f32)x / (f32)image.width);
+			f32 filmX = -1.0f + 2.0f * ((f32)x / (f32)workOrder->image.width);
 
 			for (u32 rayIndex = 0;
 				 rayIndex < raysPerPixel;
@@ -56,7 +56,7 @@ RenderTile(World* world, ImageBuffer image, u32 minX, u32 minY, u32 maxX, u32 ma
 
 				V3 rayOrigin = cameraPosition;
 				V3 rayDirection = NOZ(filmPoint - cameraPosition);
-				sample += RayCast(world, rayOrigin, rayDirection, contribution);
+				sample += RayCast(workQueue, workOrder->world, rayOrigin, rayDirection, contribution);
 			}
 			finalColor += contribution * sample;
 			V4 bmpColor = {
@@ -69,8 +69,7 @@ RenderTile(World* world, ImageBuffer image, u32 minX, u32 minY, u32 maxX, u32 ma
 			*finalOutput++ = bmpValue;
 		}
 	}
-
-	++world->tilesRenderedCount;
+	++workQueue->tilesRenderedCount;
 }
 
 int main(int, char**)
@@ -86,7 +85,7 @@ int main(int, char**)
 	materials[4].scatter = .25f;
 	materials[4].refColor = V3f(0.64f, 0.7f, 0.921f);
 	materials[5].scatter = .02f;
-	materials[5].refColor = V3f(0.18f);
+	materials[5].refColor = V3f(0.7f);
 
 	Plane planes[1] = {};
 	planes[0].normal = V3f(0.0f, 0.0f, 1.0f);
@@ -121,11 +120,15 @@ int main(int, char**)
 	u32 coreCount = 8;
 	u32 tileWidth = image.width / coreCount;
 	u32 tileHeight = tileWidth;
+
 	printf("Configurations: %d Cores with %dx%d (%dk) tiles.\n", coreCount, tileWidth, tileHeight, (tileWidth * tileHeight) * 4 / 1024);
 
 	u32 tileCountX = (image.width + tileWidth - 1) / tileWidth;
 	u32 tileCountY = (image.height + tileHeight - 1) / tileHeight;
 	u32 totalTilesCount = tileCountX * tileCountY;
+
+	WorkQueue workQueue = {};
+	workQueue.workOrders = (WorkOrder*)malloc(sizeof(WorkOrder) * totalTilesCount);
 
 	for (u32 tileY = 0;
 		 tileY < tileCountY;
@@ -143,18 +146,35 @@ int main(int, char**)
 			u32 maxX = minX + tileWidth;
 			if (maxX > image.width)
 				maxX = image.width;
-			RenderTile(&world, image, minX, minY, maxX, maxY);
-			if ((world.tilesRenderedCount % 10) == 0)
-				printf("Progress: %d%% ...\n", 100 * world.tilesRenderedCount / totalTilesCount);
-			fflush(stdout);
+
+			WorkOrder* workOrder = workQueue.workOrders + workQueue.workOrderCount++;
+			// workQueue.workOrders[workQueue.workOrderCount - 1] = *workOrders;
+			Assert(workQueue.workOrderCount <= totalTilesCount);
+			workOrder->world = &world;
+			workOrder->image = image;
+			workOrder->minX = minX;
+			workOrder->minY = minY;
+			workOrder->maxX = maxX;
+			workOrder->maxY = maxY;
 		}
 	}
+	Assert(workQueue.workOrderCount == totalTilesCount);
 
+	for (u32 orderIndex = 0;
+		 orderIndex < workQueue.workOrderCount;
+		 ++orderIndex)
+	{
+		WorkOrder* workOrder = workQueue.workOrders + orderIndex;
+		RenderTile(&workQueue, workOrder);
+
+		printf("Progress: %d%% ...\n", 100 * workQueue.tilesRenderedCount / totalTilesCount);
+		fflush(stdout);
+	}
 	clock_t endTime = clock();
 	clock_t timeElapsed = endTime - startTime;
 	printf("Render Time: %dms\n", timeElapsed);
-	printf("Total Bounces: %llu\n", (u64)world.bouncesComputed);
-	printf("Performance: %fms/bounces\n", ((f64)timeElapsed / (f64)world.bouncesComputed));
+	printf("Total Bounces: %llu\n", workQueue.bouncesComputed);
+	printf("Performance: %fms/bounces\n", ((f64)timeElapsed / (f64)workQueue.bouncesComputed));
 
 	WriteImage(image, "output/final_render.bmp");
 

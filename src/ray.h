@@ -36,13 +36,30 @@ struct World
 
 	Sphere* spheres;
 	u32 sphereCount;
+};
 
-	u64 bouncesComputed;
-	u32 tilesRenderedCount;
+struct WorkOrder
+{
+	World* world;
+	ImageBuffer image;
+	u32 minX;
+	u32 minY;
+	u32 maxX;
+	u32 maxY;
+};
+
+struct WorkQueue
+{
+	u32 workOrderCount;
+	WorkOrder* workOrders;
+
+	volatile u64 nextWorkOrderIndex;
+	volatile u64 bouncesComputed;
+	volatile u32 tilesRenderedCount;
 };
 
 internal V3
-RayCast(World* world, V3 rayOrigin, V3 rayDirection, f32 contribution)
+RayCast(WorkQueue* workQueue, World* world, V3 rayOrigin, V3 rayDirection, f32 contribution)
 {
 	f32 tolerance = 0.0001f;
 	f32 minHitDist = 0.001f;
@@ -135,7 +152,7 @@ RayCast(World* world, V3 rayOrigin, V3 rayDirection, f32 contribution)
 		}
 	}
 
-	world->bouncesComputed += bounceComputed;
+	workQueue->bouncesComputed += bounceComputed;
 
 	return sample;
 }
