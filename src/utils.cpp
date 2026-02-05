@@ -58,7 +58,7 @@ struct WorkQueue
 	volatile u64 tilesRenderedCount;
 };
 
-internal V3 cameraPosition = V3f(0.0f, -12.0f, 2.5f);
+internal V3 cameraPosition = V3f(0.0f, -12.0f, 1.8f);
 internal V3 cameraZ = NOZ(cameraPosition);
 internal V3 cameraX = NOZ(Cross(V3f(0.0f, 0.0f, 1.0f), cameraZ));
 internal V3 cameraY = NOZ(Cross(cameraZ, cameraX));

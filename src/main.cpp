@@ -21,20 +21,20 @@ int main(int, char**)
 
 	Plane planes[1] = {};
 	planes[0].normal = V3f(0.0f, 0.0f, 1.0f);
-	planes[0].distance = 0.0f;
+	planes[0].distance = 2.0f;
 	planes[0].matIndex = 1;
 
 	Sphere spheres[4] = {};
-	spheres[0].center = V3f(0.0f, 0.0f, 0.0f);
+	spheres[0].center = V3f(0.0f, 0.0f, -1.0f);
 	spheres[0].radius = 1.0f;
 	spheres[0].matIndex = 2;
-	spheres[1].center = V3f(2.5f, -1.5f, 0.0f);
+	spheres[1].center = V3f(2.5f, -1.5f, -1.0f);
 	spheres[1].radius = 1.0f;
 	spheres[1].matIndex = 3;
-	spheres[2].center = V3f(-1.0f, -0.5f, 2.0f);
+	spheres[2].center = V3f(-1.0f, -0.5f, 1.0f);
 	spheres[2].radius = 1.0f;
 	spheres[2].matIndex = 4;
-	spheres[3].center = V3f(-3.0f, 3.0f, 1.0f);
+	spheres[3].center = V3f(-3.0f, 3.0f, 0.0f);
 	spheres[3].radius = 2.0f;
 	spheres[3].matIndex = 5;
 
