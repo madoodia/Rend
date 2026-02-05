@@ -154,7 +154,7 @@ internal V3 RayCast(WorkQueue* workQueue, World* world, V3 rayOrigin, V3 rayDire
 
 	V3 sample = {};
 	V3 attenuation = V3f(1.0f, 1.0f, 1.0f);
-	u32 bouncesCount = 32; // TODO: Solve the problem of one bouncesCount that render Objects Black
+	u32 bouncesCount = 128; // TODO: Solve the problem of one bouncesCount that render Objects Black
 	for (u32 bounceIndex = 0;
 		 bounceIndex < bouncesCount;
 		 ++bounceIndex)
@@ -273,7 +273,7 @@ internal b32x RenderTile(WorkQueue* workQueue)
 	f32 halfPixW = 0.5f / image.width;
 	f32 halfPixH = 0.5f / image.height;
 
-	u32 raysPerPixel = 16;
+	u32 raysPerPixel = 256;
 	f32 contribution = 1.0f / (f32)raysPerPixel;
 
 	for (u32 y = minY;

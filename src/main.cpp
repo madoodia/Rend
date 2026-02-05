@@ -13,7 +13,7 @@ int main(int, char**)
 	materials[2].scatter = 1.0f;
 	materials[2].refColor = V3f(0.921f, 0.784f, 0.467f);
 	materials[3].scatter = 1.0f;
-	materials[3].emitColor = V3f(2.2f, 0.0f, 0.0f);
+	materials[3].emitColor = V3f(10.0f, 0.0f, 0.0f);
 	materials[4].scatter = .25f;
 	materials[4].refColor = V3f(0.5f, 0.7f, 0.921f);
 	materials[5].scatter = .1f;
@@ -28,8 +28,8 @@ int main(int, char**)
 	spheres[0].center = V3f(0.0f, 0.0f, -1.0f);
 	spheres[0].radius = 1.0f;
 	spheres[0].matIndex = 2;
-	spheres[1].center = V3f(2.5f, -1.5f, -1.0f);
-	spheres[1].radius = 1.0f;
+	spheres[1].center = V3f(-2.5f, -1.5f, -1.0f);
+	spheres[1].radius = 0.3f;
 	spheres[1].matIndex = 3;
 	spheres[2].center = V3f(-1.0f, -0.5f, 1.0f);
 	spheres[2].radius = 1.0f;
