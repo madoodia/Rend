@@ -6,7 +6,7 @@
 
 int main(int, char**)
 {
-	Material materials[6] = {};
+	Material materials[7] = {};
 	materials[0].emitColor = V3f(0.2f, 0.4f, 0.6f);
 	materials[1].scatter = 1.0f;
 	materials[1].refColor = V3f(0.4f, 0.4f, 0.4f);
@@ -18,18 +18,20 @@ int main(int, char**)
 	materials[4].refColor = V3f(0.5f, 0.7f, 0.921f);
 	materials[5].scatter = .1f;
 	materials[5].refColor = V3f(0.7f, 0.21f, 0.75f);
+	materials[6].scatter = .0f;
+	materials[6].refColor = V3f(0.1f, 0.71f, 0.75f);
 
 	Plane planes[1] = {};
 	planes[0].normal = V3f(0.0f, 0.0f, 1.0f);
 	planes[0].distance = 2.0f;
 	planes[0].matIndex = 1;
 
-	Sphere spheres[4] = {};
+	Sphere spheres[5] = {};
 	spheres[0].center = V3f(0.0f, 0.0f, -1.0f);
 	spheres[0].radius = 1.0f;
 	spheres[0].matIndex = 2;
 	spheres[1].center = V3f(-2.5f, -1.5f, -1.0f);
-	spheres[1].radius = 0.3f;
+	spheres[1].radius = 0.5f;
 	spheres[1].matIndex = 3;
 	spheres[2].center = V3f(-1.0f, -0.5f, 1.0f);
 	spheres[2].radius = 1.0f;
@@ -37,6 +39,9 @@ int main(int, char**)
 	spheres[3].center = V3f(-3.0f, 3.0f, 0.0f);
 	spheres[3].radius = 2.0f;
 	spheres[3].matIndex = 5;
+	spheres[4].center = V3f(5.0f, 25.0f, 1.0f);
+	spheres[4].radius = 6.0f;
+	spheres[4].matIndex = 6;
 
 	World world = {};
 	world.materials = materials;
