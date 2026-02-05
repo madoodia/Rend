@@ -220,7 +220,7 @@ internal V3 RayCast(WorkQueue* workQueue, World* world, V3 rayOrigin, V3 rayDire
 		{
 			Material hitMat = world->materials[hitMatIndex];
 			sample += Hadamard(attenuation, hitMat.emitColor);
-			f32 cosAtten = 1.0f; // Dot(-rayDirection, nextNormal);
+			f32 cosAtten = Dot(-rayDirection, nextNormal)*1.25f;
 			if (cosAtten < 0.0f)
 				cosAtten = 0.0f;
 			attenuation = Hadamard(attenuation, cosAtten * hitMat.refColor);
