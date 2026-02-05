@@ -2,7 +2,7 @@
 
 #include "global.h"
 #include "math.h"
-#include "utils.h"
+#include "utils.cpp"
 
 int main(int, char**)
 {
