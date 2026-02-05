@@ -150,6 +150,7 @@ internal V3 RayCast(WorkQueue* workQueue, World* world, V3 rayOrigin, V3 rayDire
 	f32 tolerance = 0.0001f;
 	f32 minHitDist = 0.001f;
 	u64 bounceComputed = 0;
+	V3 unitVec = Normalize(rayDirection);
 
 	V3 sample = {};
 	V3 attenuation = V3f(1.0f, 1.0f, 1.0f);
@@ -220,10 +221,10 @@ internal V3 RayCast(WorkQueue* workQueue, World* world, V3 rayOrigin, V3 rayDire
 		{
 			Material hitMat = world->materials[hitMatIndex];
 			sample += Hadamard(attenuation, hitMat.emitColor);
-			f32 cosAtten = Dot(-rayDirection, nextNormal)*1.25f;
+			f32 cosAtten = Dot(-rayDirection, nextNormal) * 1.25f;
 			if (cosAtten < 0.0f)
 				cosAtten = 0.0f;
-			attenuation = Hadamard(attenuation, cosAtten * hitMat.refColor);
+			attenuation = Hadamard(attenuation, cosAtten * hitMat.refColor); // Lerp(V3f(.7f, .0f, .0f), hitMat.refColor, unitVec.y) // for blending based on ray angle
 
 			rayOrigin += hitDistance * rayDirection;
 			V3 mainBounce = rayDirection - (Dot(rayDirection, nextNormal) * 2.0f * nextNormal);
