@@ -2,8 +2,8 @@
 
 #include <time.h>
 
-#include "global.h"
-#include "math.h"
+#include "Global.h"
+#include "Math.h"
 
 struct Material
 {
@@ -57,7 +57,6 @@ struct WorkQueue
 	volatile u64 bouncesComputed;
 	volatile u64 tilesRenderedCount;
 };
-
 
 internal V3 cameraPosition = V3f(0.0f, -12.0f, 2.5f);
 internal V3 cameraZ = NOZ(cameraPosition);

@@ -1,8 +1,8 @@
 /* (C) 2026 madoodia.com */
 
-#include "global.h"
-#include "math.h"
-#include "utils.cpp"
+#include "Global.h"
+#include "Math.h"
+#include "Utils.cpp"
 
 int main(int, char**)
 {
@@ -116,7 +116,7 @@ int main(int, char**)
 	printf("Total Bounces: %llu\n", workQueue.bouncesComputed);
 	printf("Performance: %fms/bounces\n", ((f64)timeElapsed / (f64)workQueue.bouncesComputed));
 
-	WriteImage(image, "output/final_render.bmp");
+	WriteImage(image, "output/FinalRender.bmp");
 
 	return 0;
 }
