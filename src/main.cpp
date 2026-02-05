@@ -23,7 +23,7 @@ RenderTile(WorkQueue* workQueue)
 	u32 maxX = workOrder->maxX;
 	u32 maxY = workOrder->maxY;
 
-	V3 cameraPosition = V3f(0.0f, -10.0f, 1.0f);
+	V3 cameraPosition = V3f(0.0f, -10.0f, 1.2f);
 	V3 cameraZ = NOZ(cameraPosition);
 	V3 cameraX = NOZ(Cross(V3f(0.0f, 0.0f, 1.0f), cameraZ));
 	V3 cameraY = NOZ(Cross(cameraZ, cameraX));
@@ -98,8 +98,8 @@ int main(int, char**)
 	materials[3].emitColor = V3f(2.2f, 0.0f, 0.0f);
 	materials[4].scatter = .25f;
 	materials[4].refColor = V3f(0.64f, 0.7f, 0.921f);
-	materials[5].scatter = .02f;
-	materials[5].refColor = V3f(0.7f);
+	materials[5].scatter = .1f;
+	materials[5].refColor = V3f(0.7f, 0.21f, 0.75f);
 
 	Plane planes[1] = {};
 	planes[0].normal = V3f(0.0f, 0.0f, 1.0f);
