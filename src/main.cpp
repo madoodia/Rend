@@ -9,7 +9,13 @@
 internal void
 RenderTile(WorkQueue* workQueue)
 {
-	WorkOrder* workOrder = workQueue->workOrders + workQueue->nextWorkOrderIndex++;
+	u64 workOrderIndex = workQueue->nextWorkOrderIndex++;
+	if (workOrderIndex >= workQueue->workOrderCount)
+	{
+		return;
+	}
+
+	WorkOrder* workOrder = workQueue->workOrders + workOrderIndex;
 	World* world = workOrder->world;
 	ImageBuffer image = workOrder->image;
 	u32 minX = workOrder->minX;
@@ -128,12 +134,11 @@ int main(int, char**)
 	u32 coreCount = 8;
 	u32 tileWidth = image.width / coreCount;
 	u32 tileHeight = tileWidth;
-
-	printf("Configurations: %d Cores with %dx%d (%dk) tiles.\n", coreCount, tileWidth, tileHeight, (tileWidth * tileHeight) * 4 / 1024);
-
 	u32 tileCountX = (image.width + tileWidth - 1) / tileWidth;
 	u32 tileCountY = (image.height + tileHeight - 1) / tileHeight;
 	u32 totalTilesCount = tileCountX * tileCountY;
+
+	printf("Configurations: %d Cores with %d of %dx%d (%dk) tiles.\n", coreCount, totalTilesCount, tileWidth, tileHeight, (tileWidth * tileHeight) * 4 / 1024);
 
 	WorkQueue workQueue = {};
 	workQueue.workOrders = (WorkOrder*)malloc(sizeof(WorkOrder) * totalTilesCount);
@@ -167,7 +172,6 @@ int main(int, char**)
 		}
 	}
 	Assert(workQueue.workOrderCount == totalTilesCount);
-
 
 	while (workQueue.tilesRenderedCount < totalTilesCount)
 	{
