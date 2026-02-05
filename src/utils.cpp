@@ -1,72 +1,13 @@
 /* (C) 2026 madoodia.com */
 
-#pragma once
+#include "utils.h"
 
-#include "global.h"
-#include "math.h"
-#include "ray.h"
-
-struct Material
-{
-	f32 scatter;
-	V3 emitColor;
-	V3 refColor;
-};
-
-struct Plane
-{
-	V3 normal;
-	f32 distance;
-	u32 matIndex;
-};
-
-struct Sphere
-{
-	V3 center;
-	f32 radius;
-	u32 matIndex;
-};
-
-struct World
-{
-	Material* materials;
-	u32 materialCount;
-
-	Plane* planes;
-	u32 planeCount;
-
-	Sphere* spheres;
-	u32 sphereCount;
-};
-
-struct WorkOrder
-{
-	World* world;
-	ImageBuffer image;
-	u32 minX;
-	u32 minY;
-	u32 maxX;
-	u32 maxY;
-};
-
-struct WorkQueue
-{
-	u32 workOrderCount;
-	WorkOrder* workOrders;
-
-	volatile u64 nextWorkOrderIndex;
-	volatile u64 bouncesComputed;
-	volatile u64 tilesRenderedCount;
-};
-
-internal u32
-GetTotalPixelSize(ImageBuffer image)
+u32 GetTotalPixelSize(ImageBuffer image)
 {
 	return (u32)image.width * ((u32)image.height * sizeof(u32));
 }
 
-internal ImageBuffer
-AllocateImage(u32 width, u32 height)
+ImageBuffer AllocateImage(u32 width, u32 height)
 {
 	ImageBuffer image = {};
 	image.width = width;
@@ -78,8 +19,7 @@ AllocateImage(u32 width, u32 height)
 	return image;
 }
 
-internal void
-WriteImage(ImageBuffer image, const char* filename)
+void WriteImage(ImageBuffer image, const char* filename)
 {
 	u32 pixelSize = GetTotalPixelSize(image);
 	BitmapHeader bmpHeader = {};
@@ -107,6 +47,7 @@ WriteImage(ImageBuffer image, const char* filename)
 		fwrite(&bmpHeader, sizeof(bmpHeader), 1, outputFile);
 		fwrite(image.pixels, pixelSize, 1, outputFile);
 		fclose(outputFile);
+		printf("Image written to '%s'\n", filename);
 	}
 	else
 	{
@@ -114,8 +55,7 @@ WriteImage(ImageBuffer image, const char* filename)
 	}
 }
 
-internal f32
-LinearToRGB(f32 linear)
+f32 LinearToRGB(f32 linear)
 {
 
 	if (linear <= 0.0f)
@@ -132,22 +72,19 @@ LinearToRGB(f32 linear)
 	return srgb;
 }
 
-internal u32*
-GetPixelPointer(ImageBuffer image, u32 x, u32 y)
+u32* GetPixelPointer(ImageBuffer image, u32 x, u32 y)
 {
 	u32* result = image.pixels + y * image.width + x;
 	return result;
 }
 
-internal u64
-LockedAdd(volatile u64* value, u64 addend)
+u64 LockedAdd(volatile u64* value, u64 addend)
 {
 	u64 oldValue = InterlockedExchangeAdd64((volatile LONG64*)value, (LONGLONG)addend);
 	return (u64)oldValue;
 }
 
-internal V3
-RayCast(WorkQueue* workQueue, World* world, V3 rayOrigin, V3 rayDirection, f32 contribution)
+V3 RayCast(WorkQueue* workQueue, World* world, V3 rayOrigin, V3 rayDirection, f32 contribution)
 {
 	f32 tolerance = 0.0001f;
 	f32 minHitDist = 0.001f;
@@ -245,8 +182,7 @@ RayCast(WorkQueue* workQueue, World* world, V3 rayOrigin, V3 rayDirection, f32 c
 	return sample;
 }
 
-internal b32x
-RenderTile(WorkQueue* workQueue)
+b32x RenderTile(WorkQueue* workQueue)
 {
 	u64 workOrderIndex = LockedAdd(&workQueue->nextWorkOrderIndex, 1);
 	if (workOrderIndex >= workQueue->workOrderCount)
@@ -326,8 +262,7 @@ RenderTile(WorkQueue* workQueue)
 	return true;
 }
 
-internal uint64_t
-GetCPUFrequencyHz()
+uint64_t GetCPUFrequencyHz()
 {
 	DWORD freq_mhz = 0;
 	DWORD size = sizeof(freq_mhz);
@@ -342,39 +277,7 @@ GetCPUFrequencyHz()
 	return 0;
 }
 
-class TimeStamp
-{
-public:
-	explicit TimeStamp(const char* msg)
-	{
-		m_start = ReadTimeStampCounter();
-		m_cpu_hz = GetCPUFrequencyHz();
-		m_msg = msg;
-	}
-	~TimeStamp()
-	{
-		m_end = ReadTimeStampCounter();
-
-		double elapsed_ms = (double)(m_end - m_start) / m_cpu_hz * 1000.0;
-		printf("-------------------------------\n");
-		// printf("Program Start: %llu\n", m_start);
-		// printf("Program End: %llu\n", m_end);
-		printf("%s >>> Program Elapsed Time: %.2f ms\n", m_msg, elapsed_ms);
-
-		// printf("CPU Cycles Elapsed: %llu\n", (u64)(m_end - m_start));
-		// printf("CPU Frequency: %llu Hz\n", m_cpu_hz);
-		printf("-------------------------------\n");
-	}
-
-private:
-	u64 m_start;
-	u64 m_end;
-	u64 m_cpu_hz;
-	const char* m_msg;
-};
-
-internal DWORD WINAPI
-WorkerThread(void* lpParameter)
+DWORD WINAPI WorkerThread(void* lpParameter)
 {
 	WorkQueue* workQueue = (WorkQueue*)lpParameter;
 
@@ -385,8 +288,7 @@ WorkerThread(void* lpParameter)
 	return 0;
 }
 
-internal DWORD WINAPI
-CreateWorkThread(void* parameter)
+DWORD WINAPI CreateWorkThread(void* parameter)
 {
 	DWORD threadId;
 	HANDLE threadHandle = CreateThread(0, 0, WorkerThread, parameter, 0, &threadId);

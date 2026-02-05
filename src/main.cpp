@@ -1,10 +1,8 @@
 /* (C) 2026 madoodia.com */
 
-#include <time.h>
-
-#include "ray.h"
-#include "utils.h"
 #include "global.h"
+#include "math.h"
+#include "utils.h"
 
 int main(int, char**)
 {
